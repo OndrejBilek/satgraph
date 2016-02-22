@@ -2,11 +2,20 @@
   "name": "satgraph",
   "version": "0.1.0",
   "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
+  "author": "Ondřej Bílek",
   "main": "main.js",
+  "private": "true",
   "scripts": {
     "start": "electron main.js"
   },
-  "author": "Ondřej Bílek",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OndrejBilek/satgraph.git"
+  },
+  "dependencies": {
+    "d3": "^3.5.16",
+    "jsdom": "^8.0.3"
+  },
   "devDependencies": {
     "electron-prebuilt": "^0.36.0"
   }
