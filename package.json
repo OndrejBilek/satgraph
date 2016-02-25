@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "d3": "^3.5.16",
-    "jsdom": "^8.0.3"
+    "topojson": "^1.6.24"
   },
   "devDependencies": {
     "electron-prebuilt": "^0.36.0"
