@@ -3,11 +3,39 @@
 var map = require('./js/map');
 var d3 = require('d3');
 var topojson = require('topojson');
+var map;
+var svg;
 
+var color = d3.scale.log()
+  .range(["blue", "red"]);
 
 var width = 1200,
   height = 800,
-  rotate = [0, 0];
+  rotate = [0, 0],
+  visible = true;
+
+function toggle() {
+  if(visible){
+    d3.selectAll(".point").remove();
+    visible = false;
+  } else {
+    draw();
+    visible = true;
+  }
+}
+
+function draw(){
+  map.forEach(function(d) {
+    svg.append("path")
+      .datum({
+        type: "Point",
+        coordinates: [d.lon, d.lat]
+      })
+      .attr("class", "point")
+      .attr("fill", color(d.val));
+
+  });
+}
 
 function init() {
   var projection = d3.geo.orthographic()
@@ -35,10 +63,12 @@ function init() {
       d3.selectAll("path").attr("d", path);
     });
 
-  var svg = d3.select("body").append("svg")
+  svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .call(drag);
+
+
 
   d3.json("world.json", function(error, world) {
     if (error) throw error;
@@ -47,6 +77,12 @@ function init() {
       .datum(topojson.feature(world, world.objects.land))
       .attr("class", "land")
       .attr("d", path);
+  });
+
+  d3.csv("map.csv", function(error, m) {
+    if (error) throw error;
+    map = m;
+    draw();
   });
 
 }
