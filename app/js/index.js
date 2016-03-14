@@ -9,6 +9,7 @@ var projection;
 var path;
 var layer1;
 var layer2;
+var idx;
 
 var color = d3.scale.log()
   .range(["blue", "red"]);
@@ -29,24 +30,33 @@ function toggle() {
 }
 
 function draw() {
-  map.forEach(function(d) {
+  idx = 0;
+
+  /*layer1.append("path")
+    .datum({
+      type: "MultiPoint",
+      coordinates: map
+    })
+    .attr("class", "points")
+    .attr("d", path)
+    .attr("fill-opacity", "1.0");*/
+
+  d3.geom.voronoi(map.map(projection)).forEach(function(v) {
     layer1.append("path")
-      .datum({
-        type: "Point",
-        coordinates: [d.lon, d.lat]
+      .datum(v)
+      .attr("fill", function(d) {
+        return color(map[idx++][2]);
       })
-      .attr("class", "point")
-      .attr("fill", color(d.val));
-
-      //path = d3.geo.path().projection(projection);
-      //d3.selectAll("path").attr("d", path);
-
+      .attr("class", "voronoi")
+      .attr("d", function(d) {
+        return "M" + d.join("L") + "Z";
+      });
   });
 }
 
 function init() {
-  projection = d3.geo.mercator()
-    .scale(250)
+  projection = d3.geo.albers()
+    .scale(1000)
     .translate([width / 2, height / 2])
     .clipAngle(90)
     .rotate(rotate);
@@ -88,7 +98,7 @@ function init() {
       .attr("d", path);
   });
 
-  d3.csv("map.csv", function(error, m) {
+  d3.tsv("map.tsv", function(error, m) {
     if (error) throw error;
     map = m;
     draw();
