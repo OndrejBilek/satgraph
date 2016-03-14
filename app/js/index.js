@@ -5,6 +5,10 @@ var d3 = require('d3');
 var topojson = require('topojson');
 var map;
 var svg;
+var projection;
+var path;
+var layer1;
+var layer2;
 
 var color = d3.scale.log()
   .range(["blue", "red"]);
@@ -15,7 +19,7 @@ var width = 1200,
   visible = true;
 
 function toggle() {
-  if(visible){
+  if (visible) {
     d3.selectAll(".point").remove();
     visible = false;
   } else {
@@ -24,9 +28,9 @@ function toggle() {
   }
 }
 
-function draw(){
+function draw() {
   map.forEach(function(d) {
-    svg.append("path")
+    layer1.append("path")
       .datum({
         type: "Point",
         coordinates: [d.lon, d.lat]
@@ -34,17 +38,20 @@ function draw(){
       .attr("class", "point")
       .attr("fill", color(d.val));
 
+      //path = d3.geo.path().projection(projection);
+      //d3.selectAll("path").attr("d", path);
+
   });
 }
 
 function init() {
-  var projection = d3.geo.orthographic()
+  projection = d3.geo.mercator()
     .scale(250)
     .translate([width / 2, height / 2])
     .clipAngle(90)
     .rotate(rotate);
 
-  var path = d3.geo.path()
+  path = d3.geo.path()
     .projection(projection);
 
   var drag = d3.behavior.drag()
@@ -68,14 +75,16 @@ function init() {
     .attr("height", height)
     .call(drag);
 
-
+  layer1 = svg.append("g");
+  layer2 = svg.append("g");
 
   d3.json("world.json", function(error, world) {
     if (error) throw error;
 
-    svg.append("path")
+    layer2.append("path")
       .datum(topojson.feature(world, world.objects.land))
       .attr("class", "land")
+      .attr("fill-opacity", "0.0")
       .attr("d", path);
   });
 

@@ -1,4 +1,10 @@
 .land {
   fill: #aaa;
+  fill-opacity: "0.0";
   stroke: #fff;
+  z-index: 1;
+}
+
+.point {
+  z-index: 0;
 }
