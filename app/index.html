@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>SatGraph</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <script src="js/index.js"></script>
-  </head>
-  <body onload="init()">
-    <button type="button" href="#" onclick="toggle()">Toggle</a>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>SatGraph</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <script src="js/index.js"></script>
+</head>
+
+<body onload="onInit()" onresize="onResize()">
+  <div id="mapBox">
+  </div>
+  <div id="buttonsBox">
+    <button type="button" href="#" onclick="onToggle()">Toggle</a>
+      <button type="button" href="#" onclick="onDevTools()">Dev Tools</a>
+        <button type="button" href="#" onclick="onFullscreen()">Fullscreen</a>
+  </div>
+</body>
+
 </html>

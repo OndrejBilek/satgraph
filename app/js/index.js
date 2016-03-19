@@ -3,6 +3,7 @@
 var map = require('./js/map');
 var d3 = require('d3');
 var topojson = require('topojson');
+
 var map;
 var svg;
 var projection;
@@ -14,32 +15,39 @@ var idx;
 var color = d3.scale.log()
   .range(["blue", "red"]);
 
+var scale = 500;
+
 var width = 1200,
   height = 800,
   rotate = [0, 0],
-  visible = true;
+  visible = false;
 
-function toggle() {
-  if (visible) {
-    d3.selectAll(".point").remove();
-    visible = false;
-  } else {
-    draw();
-    visible = true;
-  }
+var drag = d3.behavior.drag()
+  .origin(function() {
+    return {
+      x: rotate[0],
+      y: -rotate[1]
+    };
+  })
+  .on("drag", dragged);
+
+var zoom = d3.behavior.zoom()
+  .scaleExtent([200, 10000])
+  .on("zoom", zoomed);
+
+function dragged() {
+  rotate[0] = d3.event.x;
+  rotate[1] = -d3.event.y;
+  redrawMap();
 }
 
-function draw() {
-  idx = 0;
+function zoomed() {
+  scale = d3.event.scale;
+  redrawMap();
+}
 
-  /*layer1.append("path")
-    .datum({
-      type: "MultiPoint",
-      coordinates: map
-    })
-    .attr("class", "points")
-    .attr("d", path)
-    .attr("fill-opacity", "1.0");*/
+function redrawVoronoi() {
+  idx = 0;
 
   d3.geom.voronoi(map.map(projection)).forEach(function(v) {
     layer1.append("path")
@@ -54,54 +62,60 @@ function draw() {
   });
 }
 
-function init() {
-  projection = d3.geo.albers()
-    .scale(1000)
+function redrawMap() {
+  var mapElement = document.getElementById("map");
+  width = mapElement.clientWidth;
+  height = mapElement.clientHeight;
+
+  projection = d3.geo.orthographic()
+    .scale(scale)
     .translate([width / 2, height / 2])
     .clipAngle(90)
     .rotate(rotate);
 
-  path = d3.geo.path()
-    .projection(projection);
+  path = d3.geo.path().projection(projection);
+  d3.selectAll("path").attr("d", path);
+}
 
-  var drag = d3.behavior.drag()
-    .origin(function() {
-      return {
-        x: rotate[0],
-        y: -rotate[1]
-      };
-    })
-    .on("drag", function() {
-      rotate[0] = d3.event.x;
-      rotate[1] = -d3.event.y;
+function onResize() {
+  redrawMap();
+}
 
-      projection.rotate(rotate);
-      path = d3.geo.path().projection(projection);
-      d3.selectAll("path").attr("d", path);
-    });
+function onToggle() {
+  if (visible) {
+    d3.selectAll(".voronoi").remove();
+    visible = false;
+  } else {
+    redrawVoronoi();
+    visible = true;
+  }
+}
 
-  svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .call(drag);
+function onInit() {
+  svg = d3.select("#mapBox").append("svg")
+    .attr("id", "map")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .call(drag)
+    .call(zoom);
 
   layer1 = svg.append("g");
   layer2 = svg.append("g");
 
-  d3.json("world.json", function(error, world) {
+  d3.json("world.json", function(error, data) {
     if (error) throw error;
 
     layer2.append("path")
-      .datum(topojson.feature(world, world.objects.land))
+      .datum(topojson.feature(data, data.objects.land))
       .attr("class", "land")
       .attr("fill-opacity", "0.0")
       .attr("d", path);
   });
 
-  d3.tsv("map.tsv", function(error, m) {
+  d3.tsv("map.tsv", function(error, data) {
     if (error) throw error;
-    map = m;
-    draw();
+
+    map = data;
   });
 
 }

@@ -12,10 +12,9 @@ app.on('ready', function() {
 });
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800
-  });
+  mainWindow = new BrowserWindow();
+  mainWindow.maximize();
+
   mainWindow.loadURL('file://' + __dirname + '/app/index.html');
 }
 
