@@ -15,7 +15,7 @@ var idx;
 var color = d3.scale.log()
   .range(["blue", "red"]);
 
-var scale = 500;
+var scale = 200;
 
 var width = 1200,
   height = 800,
@@ -38,12 +38,16 @@ var zoom = d3.behavior.zoom()
 function dragged() {
   rotate[0] = d3.event.x;
   rotate[1] = -d3.event.y;
+  console.log("Drag");
   redrawMap();
 }
 
 function zoomed() {
-  scale = d3.event.scale;
-  redrawMap();
+  if (d3.event.sourceEvent.type == "wheel"){
+    scale = d3.event.scale;
+    redrawMap();
+    console.log("Zoom")
+  }
 }
 
 function redrawVoronoi() {
