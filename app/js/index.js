@@ -1,12 +1,12 @@
 'use strict';
 
+const ipc = require('electron').ipcRenderer;
 var map = require('./js/map');
 var d3 = require('d3');
 var topojson = require('topojson');
 
 var map;
 var svg;
-var projection;
 var path;
 var layer1;
 var layer2;
@@ -21,6 +21,9 @@ var width = 1200,
   height = 800,
   rotate = [0, 0],
   visible = false;
+
+var projection = d3.geo.equirectangular()
+  .precision(.1);
 
 var drag = d3.behavior.drag()
   .origin(function() {
@@ -38,16 +41,19 @@ var zoom = d3.behavior.zoom()
 function dragged() {
   rotate[0] = d3.event.x;
   rotate[1] = -d3.event.y;
-  console.log("Drag");
   redrawMap();
 }
 
 function zoomed() {
-  if (d3.event.sourceEvent.type == "wheel"){
+  if (d3.event.sourceEvent.type == "wheel") {
     scale = d3.event.scale;
     redrawMap();
-    console.log("Zoom")
   }
+}
+
+function clearVoronoi() {
+  d3.selectAll(".voronoi").remove();
+  visible = false;
 }
 
 function redrawVoronoi() {
@@ -67,14 +73,14 @@ function redrawVoronoi() {
 }
 
 function redrawMap() {
+  clearVoronoi();
+
   var mapElement = document.getElementById("map");
   width = mapElement.clientWidth;
   height = mapElement.clientHeight;
 
-  projection = d3.geo.orthographic()
+  projection.translate([width / 2, height / 2])
     .scale(scale)
-    .translate([width / 2, height / 2])
-    .clipAngle(90)
     .rotate(rotate);
 
   path = d3.geo.path().projection(projection);
@@ -93,6 +99,31 @@ function onToggle() {
     redrawVoronoi();
     visible = true;
   }
+}
+
+function onFullscreen() {
+  ipc.send("fullscreen");
+}
+
+function onReload() {
+  ipc.send("reload");
+}
+
+function onDevTools() {
+  ipc.send("dev-tools");
+}
+
+function onEquirectangular() {
+  projection = d3.geo.equirectangular()
+    .precision(.1);
+  redrawMap();
+}
+
+function onOrthographic() {
+  projection = d3.geo.orthographic()
+    .clipAngle(90)
+    .precision(.1);
+  redrawMap();
 }
 
 function onInit() {

@@ -1,7 +1,7 @@
 'use strict';
 
 var app = require('app');
-var ipc = require("electron").ipcMain
+const ipc = require("electron").ipcMain
 var BrowserWindow = require('browser-window');
 
 var mainWindow;
@@ -14,20 +14,32 @@ app.on('ready', function() {
 function createWindow() {
   mainWindow = new BrowserWindow();
   mainWindow.maximize();
+  mainWindow.setMenu(null);
 
   mainWindow.loadURL('file://' + __dirname + '/app/index.html');
 }
 
 function addListeners() {
-  app.on('window-all-closed', function() {
-    quit();
-  });
+  app.on('window-all-closed', quit);
+  ipc.on('quit', quit);
+  ipc.on('reload', reload);
+  ipc.on('dev-tools', devTools);
+  ipc.on('fullscreen', fullscreen);
 
-  ipc.on('quit', function() {
-    quit();
-  });
 }
 
 function quit() {
   app.quit();
+}
+
+function reload() {
+  mainWindow.reload();
+}
+
+function devTools() {
+  mainWindow.toggleDevTools();
+}
+
+function fullscreen() {
+  mainWindow.setFullScreen(!mainWindow.isFullScreen());
 }
