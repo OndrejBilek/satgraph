@@ -63,8 +63,12 @@ function redrawVoronoi() {
     layer1.append("path")
       .datum(v)
       .attr("fill", function(d) {
+        return color(map[idx][2]);
+      })
+      .attr("stroke", function(d) {
         return color(map[idx++][2]);
       })
+      .attr("stroke-width", "1")
       .attr("class", "voronoi")
       .attr("d", function(d) {
         return "M" + d.join("L") + "Z";
