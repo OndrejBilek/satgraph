@@ -15,7 +15,7 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadURL('file://' + __dirname + '/app/index.html');
+  mainWindow.loadURL('file://' + __dirname + '/html/index.html');
 }
 
 function addListeners() {

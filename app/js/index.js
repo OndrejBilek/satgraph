@@ -7,6 +7,8 @@ const electron = require('electron');
 const dialog = electron.remote.require('dialog');
 const mainWindow = electron.remote.getCurrentWindow();
 
+var addon = require("../build/Release/tools.node");
+
 var map;
 var svg;
 var path;
@@ -152,6 +154,8 @@ function onOrthographic() {
 }
 
 function onInit() {
+  console.log('This should be eight:', addon.add(3, 5));
+
   svg = d3.select("#mapBox").append("svg")
     .attr("id", "map")
     .attr("width", "100%")
@@ -162,7 +166,7 @@ function onInit() {
   layer1 = svg.append("g");
   layer2 = svg.append("g");
 
-  d3.json("data/world.json", function(error, data) {
+  d3.json("../data/world.json", function(error, data) {
     if (error) throw error;
 
     layer2.append("path")
@@ -172,7 +176,7 @@ function onInit() {
       .attr("d", path);
   });
 
-  d3.tsv("data/map.tsv", function(error, data) {
+  d3.tsv("../data/map.tsv", function(error, data) {
     if (error) throw error;
 
     map = data;
