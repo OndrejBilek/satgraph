@@ -13,7 +13,8 @@ var layer2;
 var idx;
 
 var color = d3.scale.log()
-  .range(["blue", "red"]);
+  .range(["blue", "green", "yellow", "red"])
+  .domain([1, 3, 5, 7]);
 
 var scale = 200;
 
@@ -59,7 +60,13 @@ function clearVoronoi() {
 function redrawVoronoi() {
   idx = 0;
 
-  d3.geom.voronoi(map.map(projection)).forEach(function(v) {
+  var voronoi = d3.geom.voronoi().clipExtent([
+    [-180, -90],
+    [180, 90]
+  ]);
+
+  voronoi(map).forEach(function(v) {
+    v = v.map(projection);
     layer1.append("path")
       .datum(v)
       .attr("fill", function(d) {
@@ -71,7 +78,7 @@ function redrawVoronoi() {
       .attr("stroke-width", "1")
       .attr("class", "voronoi")
       .attr("d", function(d) {
-        return "M" + d.join("L") + "Z";
+        return "M" + d.join("L") + "Z"
       });
   });
 }
