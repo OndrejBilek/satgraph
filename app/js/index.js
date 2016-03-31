@@ -1,9 +1,11 @@
 'use strict';
 
-const ipc = require('electron').ipcRenderer;
-var map = require('./js/map');
-var d3 = require('d3');
-var topojson = require('topojson');
+const d3 = require('d3');
+const topojson = require('topojson');
+
+const electron = require('electron');
+const dialog = electron.remote.require('dialog');
+const mainWindow = electron.remote.getCurrentWindow();
 
 var map;
 var svg;
@@ -98,8 +100,20 @@ function redrawMap() {
   d3.selectAll("path").attr("d", path);
 }
 
+function openFile(path) {
+  console.log(path);
+}
+
 function onResize() {
   redrawMap();
+}
+
+function onOpen() {
+  dialog.showOpenDialog(
+    function(fileNames) {
+      if (fileNames === undefined) return;
+      openFile(fileNames[0]);
+    });
 }
 
 function onToggle() {
@@ -113,15 +127,15 @@ function onToggle() {
 }
 
 function onFullscreen() {
-  ipc.send("fullscreen");
+  mainWindow.setFullScreen(!mainWindow.isFullScreen());
 }
 
 function onReload() {
-  ipc.send("reload");
+  mainWindow.reload();
 }
 
 function onDevTools() {
-  ipc.send("dev-tools");
+  mainWindow.toggleDevTools();
 }
 
 function onEquirectangular() {
@@ -148,7 +162,7 @@ function onInit() {
   layer1 = svg.append("g");
   layer2 = svg.append("g");
 
-  d3.json("world.json", function(error, data) {
+  d3.json("data/world.json", function(error, data) {
     if (error) throw error;
 
     layer2.append("path")
@@ -158,7 +172,7 @@ function onInit() {
       .attr("d", path);
   });
 
-  d3.tsv("map.tsv", function(error, data) {
+  d3.tsv("data/map.tsv", function(error, data) {
     if (error) throw error;
 
     map = data;

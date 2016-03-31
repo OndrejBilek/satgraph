@@ -1,6 +1,2 @@
 node_modules
-*.json
 *.log
-*.dat
-*.csv
-*.tsv

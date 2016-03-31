@@ -4,7 +4,7 @@
   stroke-width: 2px;
 }
 .voronoi {
-  
+
 }
 html {
   height: 100%;
@@ -39,4 +39,5 @@ body {
   display: inline-block;
   font-size: 16px;
   cursor: pointer;
+  margin: 5px;
 }
