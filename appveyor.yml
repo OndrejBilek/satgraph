@@ -9,6 +9,4 @@ build_script:
   - npm run dist
 
 artifacts:
-  - path: C:\projects\satgraph
-    name: satgraph-win-x64
-    type: zip
+  - path: **\*.exe
