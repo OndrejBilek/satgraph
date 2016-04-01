@@ -1,0 +1,9 @@
+platform:
+  - x64
+
+install:
+  - ps: Install-Product node 5 x64
+  - npm install
+
+build_script:
+  - npm run dist
