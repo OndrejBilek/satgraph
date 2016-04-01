@@ -6,6 +6,10 @@ node_js:
 env:
   - CXX=g++-4.8
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y icns2png
+
 addons:
   apt:
     sources:
@@ -13,7 +17,6 @@ addons:
     packages:
       - g++-4.8
       - ruby-dev
-      - icns2png
 
 script:
 - gem install fpm
