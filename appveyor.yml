@@ -9,4 +9,4 @@ build_script:
   - npm run dist
 
 artifacts:
-  - path: '**\*.exe'
+  - path: 'dist\win-x64\**\*.exe'
