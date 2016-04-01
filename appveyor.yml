@@ -7,3 +7,8 @@ install:
 
 build_script:
   - npm run dist
+
+artifacts:
+  - path: satgraph/dist
+    name: satgraph-win-x64
+    type: zip

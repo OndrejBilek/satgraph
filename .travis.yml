@@ -13,6 +13,7 @@ addons:
     packages:
       - g++-4.8
       - ruby-dev
+      - icns2png
 
 script:
 - gem install fpm
