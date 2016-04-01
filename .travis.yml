@@ -3,5 +3,15 @@ language: node_js
 node_js:
   - "5"
 
+env:
+  - CXX=g++
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++
+
 script:
 - npm run dist
