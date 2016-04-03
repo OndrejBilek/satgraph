@@ -109,7 +109,8 @@ function redrawMap() {
 }
 
 function openFile(path) {
-  addon.process(path);
+  map = addon.process(path);
+  
 }
 
 function onResize() {
