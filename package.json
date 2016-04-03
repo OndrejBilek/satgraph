@@ -7,6 +7,7 @@
   "private": "true",
   "scripts": {
     "postinstall": "install-app-deps",
+    "start": "cd app && npm run compile && electron .",
     "pack": "build",
     "dist": "build",
     "release": "build"
