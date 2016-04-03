@@ -20,7 +20,6 @@ function handleStartupEvent(){
   var squirrelCommand = process.argv[1];
   switch (squirrelCommand) {
     case '--squirrel-install':
-      dialog.showErrorBox("Install", "Install");
       app.quit();
       return;
     case '--squirrel-updated':

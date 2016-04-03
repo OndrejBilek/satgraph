@@ -9,6 +9,8 @@ const mainWindow = electron.remote.getCurrentWindow();
 
 var addon = require("../build/Release/tools.node");
 
+require("d3-geo-projection")(d3);
+
 var map;
 var svg;
 var path;
@@ -71,19 +73,23 @@ function redrawVoronoi() {
 
   voronoi(map).forEach(function(v) {
     v = v.map(projection);
-    layer1.append("path")
-      .datum(v)
-      .attr("fill", function(d) {
-        return color(map[idx][2]);
-      })
-      .attr("stroke", function(d) {
-        return color(map[idx++][2]);
-      })
-      .attr("stroke-width", "1")
-      .attr("class", "voronoi")
-      .attr("d", function(d) {
-        return "M" + d.join("L") + "Z"
-      });
+    if (d3.geom.polygon(v).area() < 100) {
+      layer1.append("path")
+        .datum(v)
+        .attr("fill", function(d) {
+          return color(map[idx][2]);
+        })
+        .attr("stroke", function(d) {
+          return color(map[idx++][2]);
+        })
+        .attr("stroke-width", "1")
+        .attr("class", "voronoi")
+        .attr("d", function(d) {
+          return "M" + d.join("L") + "Z"
+        });
+    } else {
+      idx++;
+    }
   });
 }
 
@@ -149,6 +155,18 @@ function onEquirectangular() {
 function onOrthographic() {
   projection = d3.geo.orthographic()
     .clipAngle(90)
+    .precision(.1);
+  redrawMap();
+}
+
+function onMollweide() {
+  projection = d3.geo.mollweide()
+    .precision(.1);
+  redrawMap();
+}
+
+function onMercator() {
+  projection = d3.geo.mercator()
     .precision(.1);
   redrawMap();
 }
