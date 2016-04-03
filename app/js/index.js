@@ -7,7 +7,7 @@ const electron = require('electron');
 const dialog = electron.remote.require('dialog');
 const mainWindow = electron.remote.getCurrentWindow();
 
-var addon = require("../build/Release/tools.node");
+var addon = require("../build/Release/module.node");
 
 require("d3-geo-projection")(d3);
 
@@ -109,7 +109,7 @@ function redrawMap() {
 }
 
 function openFile(path) {
-  console.log(path);
+  addon.process(path);
 }
 
 function onResize() {
@@ -172,8 +172,6 @@ function onMercator() {
 }
 
 function onInit() {
-  console.log('This should be eight:', addon.add(3, 5));
-
   svg = d3.select("#mapBox").append("svg")
     .attr("id", "map")
     .attr("width", "100%")

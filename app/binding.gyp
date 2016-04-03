@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "tools",
-      "sources": [ "cc/tools.cc" ],
+      "target_name": "module",
+      "sources": [ "cc/module.cc", "cc/functions.cc", "cc/satgraph.cc" ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")"
       ]
