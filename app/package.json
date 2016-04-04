@@ -15,6 +15,7 @@
     "d3-geo-projection": "^0.2.16",
     "topojson": "^1.6.24",
     "bindings": "~1.2.1",
-    "nan": "^2.0.0"
+    "nan": "^2.0.0",
+    "save-svg-as-png": "^1.0.1"
   }
 }

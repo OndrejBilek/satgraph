@@ -1,7 +1,10 @@
 'use strict';
 
 const d3 = require('d3');
+const fs = require('fs');
+const pa = require('path');
 const topojson = require('topojson');
+const png = require('save-svg-as-png');
 
 const electron = require('electron');
 const dialog = electron.remote.require('dialog');
@@ -110,7 +113,6 @@ function redrawMap() {
 
 function openFile(path) {
   map = addon.process(path);
-  
 }
 
 function onResize() {
@@ -133,6 +135,26 @@ function onToggle() {
     redrawVoronoi();
     visible = true;
   }
+}
+
+function onDownload() {
+  var data = svg.node().outerHTML;
+
+  svg.attr("width", width)
+    .attr("height", height);
+
+
+
+  dialog.showSaveDialog(
+    function(p) {
+      if (p === undefined) return;
+      var parsed = pa.parse(p);
+      fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".svg"), data);
+      png.svgAsPngUri(document.getElementById("map"), {}, function(uri) {
+        var buffer = new Buffer(uri.split(",")[1], 'base64');
+        fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".png"), buffer);
+      });
+    });
 }
 
 function onFullscreen() {
@@ -190,6 +212,9 @@ function onInit() {
       .datum(topojson.feature(data, data.objects.land))
       .attr("class", "land")
       .attr("fill-opacity", "0.0")
+      .attr("fill", "#aaa")
+      .attr("stroke", "#fff")
+      .attr("stroke-width", "2px")
       .attr("d", path);
   });
 

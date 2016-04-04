@@ -1,3 +1,5 @@
+version: 0.1.{build}
+
 platform:
   - x64
 
@@ -10,3 +12,5 @@ build_script:
 
 artifacts:
   - path: 'dist\win-x64\**\*.exe'
+
+test: off

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include <nan.h>
 using namespace std;
 
@@ -16,17 +17,23 @@ public:
 
 private:
 
-  void   loadDat(const string&);
-  void   clearComputed();
-  void   packDat();
-  void   prepDat();
+  void loadDat(const string&);
+  void clearComputed();
+  void packDat();
+  void prepDat();
   double prepNaive(int,
-                   int);
-  double getNeighbour(int,
-                      int);
+                   int,
+                   size_t);
+  void   getNeighbour(int,
+                      int,
+                      vector<double>&);
+  double average(vector<double>&);
+  double median(vector<double>&);
+  void   kNearest(int, int, size_t, vector<double>&);
+  double normalize(int, int, size_t);
 
-  float map[180][360];
-  int   computed[180][360];
+  double map[180][360];
+  int    computed[180][360];
   v8::Local<v8::Array> packedData;
 };
 
