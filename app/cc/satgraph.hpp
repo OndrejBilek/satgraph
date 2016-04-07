@@ -21,6 +21,7 @@ private:
   void clearComputed();
   void packDat();
   void prepDat();
+  void normalizeDat();
   double prepNaive(int,
                    int,
                    size_t);

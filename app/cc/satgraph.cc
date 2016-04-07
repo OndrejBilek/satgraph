@@ -6,6 +6,7 @@ Satgraph::Satgraph(const string& path) {
 
   clearComputed();
   loadDat(path);
+  normalizeDat();
   prepDat();
   packDat();
 }
@@ -163,9 +164,11 @@ void Satgraph::kNearest(int i, int x, size_t k, vector<double>& bins) {
 double Satgraph::normalize(int i, int x, size_t k) {
   vector<double> bins;
   kNearest(i, x, k, bins);
-  double med = median(bins);
 
-  if (map[i][x] > 1.5 * med) {
+  // double med = median(bins);
+  double med = average(bins);
+
+  if (map[i][x] > 1.2 * med) {
     computed[i][x] = 2;
     return med;
   }
@@ -176,9 +179,20 @@ double Satgraph::normalize(int i, int x, size_t k) {
 double Satgraph::prepNaive(int i, int x, size_t k) {
   vector<double> bins;
   kNearest(i, x, k, bins);
-  return median(bins);
 
-  // return average(bins);
+  // return median(bins);
+
+  return average(bins);
+}
+
+void Satgraph::normalizeDat() {
+  for (int i = 8; i < 171; i++) {
+    for (int x = 0; x < 360; x++) {
+      if (map[i][x] != -1) {
+        map[i][x] = normalize(i, x, 8);
+      }
+    }
+  }
 }
 
 void Satgraph::prepDat() {
@@ -187,8 +201,6 @@ void Satgraph::prepDat() {
       if (map[i][x] == -1) {
         map[i][x]      = prepNaive(i, x, 8);
         computed[i][x] = 1;
-      } else {
-        map[i][x] = normalize(i, x, 8);
       }
     }
   }

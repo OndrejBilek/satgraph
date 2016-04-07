@@ -5,6 +5,7 @@ const fs = require('fs');
 const pa = require('path');
 const topojson = require('topojson');
 const png = require('save-svg-as-png');
+const $ = require('jquery');
 
 const electron = require('electron');
 const dialog = electron.remote.require('dialog');
@@ -13,13 +14,22 @@ const mainWindow = electron.remote.getCurrentWindow();
 var addon = require("../build/Release/module.node");
 
 require("d3-geo-projection")(d3);
+require("d3-tip")(d3);
 
 var map;
 var svg;
 var path;
 var layer1;
 var layer2;
-var idx;
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    let str = "<strong>Value: </strong><span style='color:red'>" + d.point[2] + "</span><br>";
+    str += "<strong>Type: </strong><span style='color:red'>" + type(d.point[3]) + "</span>";
+    return str;
+  })
 
 var color = d3.scale.log()
   .range(["blue", "green", "yellow", "red"])
@@ -63,37 +73,39 @@ function zoomed() {
 
 function clearVoronoi() {
   d3.selectAll(".voronoi").remove();
+  $('.d3-tip').css('opacity', '0');
   visible = false;
 }
 
 function redrawVoronoi() {
-  idx = 0;
-
   var voronoi = d3.geom.voronoi().clipExtent([
     [-180, -90],
     [180, 90]
   ]);
 
-  voronoi(map).forEach(function(v) {
-    v = v.map(projection);
-    if (d3.geom.polygon(v).area() < 100) {
-      layer1.append("path")
-        .datum(v)
-        .attr("fill", function(d) {
-          return color(map[idx][2]);
-        })
-        .attr("stroke", function(d) {
-          return color(map[idx++][2]);
-        })
-        .attr("stroke-width", "1")
-        .attr("class", "voronoi")
-        .attr("d", function(d) {
-          return "M" + d.join("L") + "Z"
-        });
-    } else {
-      idx++;
-    }
-  });
+  layer1.selectAll(".voronoi")
+    .data(voronoi(map))
+    .enter().append("svg:path")
+    .attr("stroke-width", "1")
+    .attr("class", "voronoi")
+    .attr("d", function(d) {
+      d = d.map(projection);
+      return "M" + d.join("L") + "Z";
+    })
+    .attr("fill", function(d) {
+      return color(d.point[2]);
+    })
+    .attr("stroke", function(d) {
+      return color(d.point[2]);
+    })
+    .attr("visibility", function(d) {
+      d = d.map(projection);
+      if (d3.geom.polygon(d).area() > 100)
+        return "hidden";
+      return "visible";
+    })
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 }
 
 function redrawMap() {
@@ -143,14 +155,14 @@ function onDownload() {
   svg.attr("width", width)
     .attr("height", height);
 
-
-
   dialog.showSaveDialog(
     function(p) {
       if (p === undefined) return;
       var parsed = pa.parse(p);
       fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".svg"), data);
-      png.svgAsPngUri(document.getElementById("map"), {}, function(uri) {
+      png.svgAsPngUri(document.getElementById("map"), {
+        scale: 2
+      }, function(uri) {
         var buffer = new Buffer(uri.split(",")[1], 'base64');
         fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".png"), buffer);
       });
@@ -194,13 +206,21 @@ function onMercator() {
   redrawMap();
 }
 
+function type(t) {
+  if (t == null) return "N/A";
+  if (t == 0) return "original";
+  if (t == 1) return "computed";
+  if (t == 2) return "normalized";
+}
+
 function onInit() {
   svg = d3.select("#mapBox").append("svg")
     .attr("id", "map")
     .attr("width", "100%")
     .attr("height", "100%")
     .call(drag)
-    .call(zoom);
+    .call(zoom)
+    .call(tip);
 
   layer1 = svg.append("g");
   layer2 = svg.append("g");
@@ -215,6 +235,7 @@ function onInit() {
       .attr("fill", "#aaa")
       .attr("stroke", "#fff")
       .attr("stroke-width", "2px")
+      .attr("pointer-events", "none")
       .attr("d", path);
   });
 
