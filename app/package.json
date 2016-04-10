@@ -7,7 +7,7 @@
   "private": "true",
   "gypfile": "true",
   "scripts": {
-    "compile": "node-gyp rebuild --target=0.36.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
+    "compile": "node-gyp rebuild",
     "start": "npm run compile && electron ."
   },
   "dependencies": {
@@ -16,7 +16,6 @@
     "d3-tip": "^0.6.7 ",
     "topojson": "^1.6.24",
     "bindings": "~1.2.1",
-    "nan": "^2.0.0",
     "save-svg-as-png": "^1.0.1",
     "jquery": "^2.2.3"
   }

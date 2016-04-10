@@ -1,10 +1,10 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include <nan.h>
+#include <node.h>
 
 using namespace std;
 
-NAN_METHOD(process);
+void process(const v8::FunctionCallbackInfo<v8::Value>&);
 
-#endif
+#endif // ifndef FUNCTIONS_H

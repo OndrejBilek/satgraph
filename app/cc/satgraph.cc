@@ -1,8 +1,9 @@
 
 #include "satgraph.hpp"
 
-Satgraph::Satgraph(const string& path) {
-  packedData = Nan::New<v8::Array>();
+Satgraph::Satgraph(const string& path, v8::Isolate *iso) {
+  isolate    = iso;
+  packedData = v8::Array::New(isolate, 4);
 
   clearComputed();
   loadDat(path);
@@ -57,21 +58,21 @@ void Satgraph::packDat() {
     int x = 0;
 
     for (; x < 180; x++) {
-      v8::Local<v8::Object> object = Nan::New<v8::Object>();
-      object->Set(0, Nan::New<v8::Number>(lon++));
-      object->Set(1, Nan::New<v8::Number>(lat));
-      object->Set(2, Nan::New<v8::Number>(map[i][x]));
-      object->Set(3, Nan::New<v8::Number>(computed[i][x]));
+      v8::Local<v8::Object> object = v8::Object::New(isolate);
+      object->Set(0, v8::Number::New(isolate, lon++));
+      object->Set(1, v8::Number::New(isolate, lat));
+      object->Set(2, v8::Number::New(isolate, map[i][x]));
+      object->Set(3, v8::Number::New(isolate, computed[i][x]));
       packedData->Set(idx++, object);
     }
     lon = -180;
 
     for (; x < 360; x++) {
-      v8::Local<v8::Object> object = Nan::New<v8::Object>();
-      object->Set(0, Nan::New<v8::Number>(lon++));
-      object->Set(1, Nan::New<v8::Number>(lat));
-      object->Set(2, Nan::New<v8::Number>(map[i][x]));
-      object->Set(3, Nan::New<v8::Number>(computed[i][x]));
+      v8::Local<v8::Object> object = v8::Object::New(isolate);
+      object->Set(0, v8::Number::New(isolate, lon++));
+      object->Set(1, v8::Number::New(isolate, lat));
+      object->Set(2, v8::Number::New(isolate, map[i][x]));
+      object->Set(3, v8::Number::New(isolate, computed[i][x]));
       packedData->Set(idx++, object);
     }
     lat++;

@@ -6,13 +6,15 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <nan.h>
+#include <algorithm>
+#include <node.h>
 using namespace std;
 
 class Satgraph {
 public:
 
-  Satgraph(const string&);
+  Satgraph(const string&,
+           v8::Isolate *);
   v8::Local<v8::Array>getPackedData();
 
 private:
@@ -35,6 +37,7 @@ private:
 
   double map[180][360];
   int    computed[180][360];
+  v8::Isolate *isolate;
   v8::Local<v8::Array> packedData;
 };
 

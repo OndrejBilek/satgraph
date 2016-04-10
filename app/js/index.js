@@ -124,7 +124,11 @@ function redrawMap() {
 }
 
 function openFile(path) {
-  map = addon.process(path);
+  map = addon.process(path, {
+    neighbours: 8,
+    normalize: 1.2,
+    type: "median"
+  });
 }
 
 function onResize() {
