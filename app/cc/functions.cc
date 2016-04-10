@@ -5,12 +5,12 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate *isolate = args.GetIsolate();
 
   if (args.Length() == 2) {
-    string path, type;
+    std::string path, type;
     int    neighbours = 0;
     double normalize  = 0;
 
     if (args[0]->IsString()) {
-      path = string(*v8::String::Utf8Value(args[0]));
+      path = std::string(*v8::String::Utf8Value(args[0]));
     }
 
     if (args[1]->IsObject()) {
@@ -22,7 +22,7 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
         params->Get(v8::String::NewFromUtf8(isolate, "normalize"))->NumberValue();
       v8::String::Utf8Value v8type(params->Get(v8::String::NewFromUtf8(isolate,
                                                                        "type"))->ToString());
-      type = string(*v8type);
+      type = std::string(*v8type);
     }
 
     Satgraph satgraph(path, isolate, normalize, neighbours, type);

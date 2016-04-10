@@ -2,8 +2,7 @@
 #define FUNCTIONS_H
 
 #include <node.h>
-
-using namespace std;
+#include <string>
 
 void process(const v8::FunctionCallbackInfo<v8::Value>&);
 

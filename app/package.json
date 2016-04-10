@@ -7,7 +7,7 @@
   "private": "true",
   "gypfile": "true",
   "scripts": {
-    "compile": "node-gyp rebuild --target=0.36.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell",
+    "compile": "node-gyp rebuild",
     "start": "npm run compile && electron ."
   },
   "dependencies": {
