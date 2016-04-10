@@ -1,12 +1,20 @@
 
 #include "satgraph.hpp"
 
-Satgraph::Satgraph(const string& path, v8::Isolate *iso) {
-  isolate    = iso;
-  packedData = v8::Array::New(isolate, 4);
+Satgraph::Satgraph(const string& path,
+                   v8::Isolate  *isolate,
+                   double        normalize,
+                   int           neighbours,
+                   const string& type) :
+  _isolate(isolate),
+  _normalize(normalize),
+  _neighbours(neighbours),
+  _type(type),
+  _path(path) {
+  _packedData = v8::Array::New(_isolate, 4);
 
   clearComputed();
-  loadDat(path);
+  loadDat(_path);
   normalizeDat();
   prepDat();
   packDat();
@@ -15,7 +23,7 @@ Satgraph::Satgraph(const string& path, v8::Isolate *iso) {
 void Satgraph::clearComputed() {
   for (int i = 0; i < 180; i++) {
     for (int x = 0; x < 360; x++) {
-      computed[i][x] = 0;
+      _computed[i][x] = 0;
     }
   }
 }
@@ -27,7 +35,7 @@ void Satgraph::loadDat(const string& path) {
   string   line;
   ifstream file;
 
-  file.open(path);
+  file.open(_path);
 
   // if (file.fail()) throw exception();
 
@@ -40,7 +48,7 @@ void Satgraph::loadDat(const string& path) {
     col = 0;
 
     while (in >> value) {
-      map[row][col++] = stof(value);
+      _map[row][col++] = stof(value);
       i++;
     }
 
@@ -58,29 +66,29 @@ void Satgraph::packDat() {
     int x = 0;
 
     for (; x < 180; x++) {
-      v8::Local<v8::Object> object = v8::Object::New(isolate);
-      object->Set(0, v8::Number::New(isolate, lon++));
-      object->Set(1, v8::Number::New(isolate, lat));
-      object->Set(2, v8::Number::New(isolate, map[i][x]));
-      object->Set(3, v8::Number::New(isolate, computed[i][x]));
-      packedData->Set(idx++, object);
+      v8::Local<v8::Object> object = v8::Object::New(_isolate);
+      object->Set(0, v8::Number::New(_isolate, lon++));
+      object->Set(1, v8::Number::New(_isolate, lat));
+      object->Set(2, v8::Number::New(_isolate, _map[i][x]));
+      object->Set(3, v8::Number::New(_isolate, _computed[i][x]));
+      _packedData->Set(idx++, object);
     }
     lon = -180;
 
     for (; x < 360; x++) {
-      v8::Local<v8::Object> object = v8::Object::New(isolate);
-      object->Set(0, v8::Number::New(isolate, lon++));
-      object->Set(1, v8::Number::New(isolate, lat));
-      object->Set(2, v8::Number::New(isolate, map[i][x]));
-      object->Set(3, v8::Number::New(isolate, computed[i][x]));
-      packedData->Set(idx++, object);
+      v8::Local<v8::Object> object = v8::Object::New(_isolate);
+      object->Set(0, v8::Number::New(_isolate, lon++));
+      object->Set(1, v8::Number::New(_isolate, lat));
+      object->Set(2, v8::Number::New(_isolate, _map[i][x]));
+      object->Set(3, v8::Number::New(_isolate, _computed[i][x]));
+      _packedData->Set(idx++, object);
     }
     lat++;
   }
 }
 
 v8::Local<v8::Array>Satgraph::getPackedData() {
-  return packedData;
+  return _packedData;
 }
 
 void Satgraph::getNeighbour(int i, int x,  vector<double>& bins) {
@@ -92,8 +100,8 @@ void Satgraph::getNeighbour(int i, int x,  vector<double>& bins) {
 
   if (x < 0) x += 360;
 
-  if ((map[i][x] != -1) && (computed[i][x] != 1)) {
-    bins.push_back(map[i][x]);
+  if ((_map[i][x] != -1) && (_computed[i][x] != 1)) {
+    bins.push_back(_map[i][x]);
   }
 }
 
@@ -163,45 +171,60 @@ void Satgraph::kNearest(int i, int x, size_t k, vector<double>& bins) {
 }
 
 double Satgraph::normalize(int i, int x, size_t k) {
+  double value = 0;
+
   vector<double> bins;
   kNearest(i, x, k, bins);
 
-  // double med = median(bins);
-  double med = average(bins);
-
-  if (map[i][x] > 1.2 * med) {
-    computed[i][x] = 2;
-    return med;
+  if (_type == "median") {
+    value = median(bins);
+  } else if (_type == "average") {
+    value = average(bins);
   }
 
-  return map[i][x];
+  if (_map[i][x] > _normalize * value) {
+    _computed[i][x] = 2;
+    return value;
+  }
+
+  return _map[i][x];
 }
 
 double Satgraph::prepNaive(int i, int x, size_t k) {
+  double value = 0;
+
   vector<double> bins;
   kNearest(i, x, k, bins);
 
-  // return median(bins);
+  if (_type == "median") {
+    value = median(bins);
+  } else if (_type == "average") {
+    value = average(bins);
+  }
 
-  return average(bins);
+  return value;
 }
 
 void Satgraph::normalizeDat() {
-  for (int i = 8; i < 171; i++) {
-    for (int x = 0; x < 360; x++) {
-      if (map[i][x] != -1) {
-        map[i][x] = normalize(i, x, 8);
+  if ((_normalize != 0) && (_neighbours != 0)) {
+    for (int i = 8; i < 171; i++) {
+      for (int x = 0; x < 360; x++) {
+        if (_map[i][x] != -1) {
+          _map[i][x] = normalize(i, x, _neighbours);
+        }
       }
     }
   }
 }
 
 void Satgraph::prepDat() {
-  for (int i = 8; i < 171; i++) {
-    for (int x = 0; x < 360; x++) {
-      if (map[i][x] == -1) {
-        map[i][x]      = prepNaive(i, x, 8);
-        computed[i][x] = 1;
+  if (_neighbours != 0) {
+    for (int i = 8; i < 171; i++) {
+      for (int x = 0; x < 360; x++) {
+        if (_map[i][x] == -1) {
+          _map[i][x]      = prepNaive(i, x, _neighbours);
+          _computed[i][x] = 1;
+        }
       }
     }
   }

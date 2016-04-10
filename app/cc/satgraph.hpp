@@ -14,7 +14,10 @@ class Satgraph {
 public:
 
   Satgraph(const string&,
-           v8::Isolate *);
+           v8::Isolate *,
+           double,
+           int,
+           const string&);
   v8::Local<v8::Array>getPackedData();
 
 private:
@@ -35,10 +38,16 @@ private:
   void   kNearest(int, int, size_t, vector<double>&);
   double normalize(int, int, size_t);
 
-  double map[180][360];
-  int    computed[180][360];
-  v8::Isolate *isolate;
-  v8::Local<v8::Array> packedData;
+  v8::Isolate *_isolate;
+  v8::Local<v8::Array> _packedData;
+
+  double _map[180][360];
+  int    _computed[180][360];
+
+  double _normalize;
+  int    _neighbours;
+  const string& _type;
+  const string& _path;
 };
 
 #endif /* ifndef SATGRAPH_H */

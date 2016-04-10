@@ -13,7 +13,7 @@
   </div>
   <div id="buttonsBox">
     <button type="button" class="button" href="#" onclick="onOpen()">Open</button>
-    <button type="button" class="button" href="#" onclick="onToggle()">Generate</button>
+    <button type="button" class="button" href="#" onclick="onGenerate()">Generate</button>
     <button type="button" class="button" href="#" onclick="onDownload()">Download</button>
     <br>
     <button type="button" class="button" href="#" onclick="onEquirectangular()">Equirectangular</button>
@@ -25,7 +25,13 @@
     <button type="button" class="button" href="#" onclick="onDevTools()">Dev Tools</button>
     <button type="button" class="button" href="#" onclick="onFullscreen()">Fullscreen</button>
     <button type="button" class="button" href="#" onclick="onReload()">Reload</button>
-    <br>
+    <br><a>Neighbours:<a>
+    <input type="text" value="8" id="neighbours"> Normalize:
+    <input type="text" value="1.2" id="normalize"> Type:
+    <select id="type">
+      <option value="median">Average</option>
+      <option value="average">Median</option>
+    </select>
   </div>
 </body>
 

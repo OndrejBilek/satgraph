@@ -21,13 +21,14 @@ var svg;
 var path;
 var layer1;
 var layer2;
+var fileName;
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    let str = "<strong>Value: </strong><span style='color:red'>" + d.point[2] + "</span><br>";
-    str += "<strong>Type: </strong><span style='color:red'>" + type(d.point[3]) + "</span>";
+    let str = "<strong>Value: </strong><span style='color:" + color(d.point[2]) + "'>" + d.point[2] + "</span><br>";
+    str += "<strong>Type: </strong><span style='color:white'>" + type(d.point[3]) + "</span>";
     return str;
   })
 
@@ -39,8 +40,7 @@ var scale = 200;
 
 var width = 1200,
   height = 800,
-  rotate = [0, 0],
-  visible = false;
+  rotate = [0, 0];
 
 var projection = d3.geo.equirectangular()
   .precision(.1);
@@ -74,10 +74,10 @@ function zoomed() {
 function clearVoronoi() {
   d3.selectAll(".voronoi").remove();
   $('.d3-tip').css('opacity', '0');
-  visible = false;
 }
 
 function redrawVoronoi() {
+  clearVoronoi();
   var voronoi = d3.geom.voronoi().clipExtent([
     [-180, -90],
     [180, 90]
@@ -123,12 +123,16 @@ function redrawMap() {
   d3.selectAll("path").attr("d", path);
 }
 
-function openFile(path) {
-  map = addon.process(path, {
-    neighbours: 8,
-    normalize: 1.2,
-    type: "median"
-  });
+function openFile() {
+  let opts = {
+    neighbours: $("#neighbours").val(),
+    normalize: $("#normalize").val(),
+    type: $("#type").val()
+  };
+  if (fileName) {
+    map = addon.process(fileName, opts);
+    console.log("a");
+  }
 }
 
 function onResize() {
@@ -139,18 +143,13 @@ function onOpen() {
   dialog.showOpenDialog(
     function(fileNames) {
       if (fileNames === undefined) return;
-      openFile(fileNames[0]);
+      fileName = fileNames[0];
     });
 }
 
-function onToggle() {
-  if (visible) {
-    d3.selectAll(".voronoi").remove();
-    visible = false;
-  } else {
-    redrawVoronoi();
-    visible = true;
-  }
+function onGenerate() {
+  openFile();
+  redrawVoronoi();
 }
 
 function onDownload() {
