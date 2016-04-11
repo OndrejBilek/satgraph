@@ -6,6 +6,7 @@ const png = require('save-svg-as-png');
 
 const dialog = require('electron').remote.require('dialog');
 
+let visible = false;
 let svg;
 let data;
 let xAxis;
@@ -13,16 +14,41 @@ let yAxis;
 let area;
 let line;
 
-function onInitHist() {
+function embeddCssToSvg(path, svg, cb) {
+  fs.readFile(path, "utf-8", function(err, data) {
+    if (err) throw err;
+    svg.append("defs").append("style")
+      .attr("type", "text/css")
+      .text(data);
+    cb();
+  });
+}
 
+function onInitHist() {
+  svg = d3.select("#histBox").append("svg")
+    .attr("xmlns", "http://www.w3.org/2000/svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("version", "1.1")
+    .attr("id", "hist");
+
+  embeddCssToSvg(pa.join(__dirname, "..", "css/hist.css"), svg, function() {
+    svg.append("rect")
+      .attr("height", "100%")
+      .attr("width", "100%")
+      .attr("fill", "white");
+  });
 }
 
 function onResizeHist() {
-  draw();
+  if (visible) {
+    d3.select("#main").remove();
+    draw();
+  }
 }
 
 function onDownload() {
-  var data = svg.node().outerHTML;
+  var data = $("#hist")[0].outerHTML;
 
   dialog.showSaveDialog(
     function(p) {
@@ -39,7 +65,6 @@ function onDownload() {
 }
 
 function draw() {
-  d3.select("#hist").remove();
 
   let margin = {
     top: 20,
@@ -48,17 +73,8 @@ function draw() {
     left: 20
   }
 
-  svg = d3.select("#histBox").append("svg")
-    .attr("id", "hist")
-    .attr("width", "100%")
-    .attr("height", "100%")
-
-  svg.append("rect")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("fill", "white");
-
-  svg = svg.append("g")
+  let g = svg.append("g")
+    .attr("id", "main")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   let width = $("#hist").width() - margin.left - margin.right;
@@ -107,7 +123,7 @@ function draw() {
   let zoom = d3.behavior.zoom()
     .on("zoom", zoomed);
 
-  let gradient = svg.append("defs").append("linearGradient")
+  let gradient = g.append("defs").append("linearGradient")
     .attr("id", "gradient")
     .attr("x2", "0%")
     .attr("y2", "100%");
@@ -122,7 +138,7 @@ function draw() {
     .attr("stop-color", "#999")
     .attr("stop-opacity", 1);
 
-  svg.append("clipPath")
+  g.append("clipPath")
     .attr("id", "clip")
     .append("rect")
     .attr("x", 0)
@@ -130,24 +146,24 @@ function draw() {
     .attr("width", width)
     .attr("height", height);
 
-  svg.append("g")
+  g.append("g")
     .attr("class", "y axis")
     .attr("transform", "translate(" + width + ",0)");
 
-  svg.append("path")
+  g.append("path")
     .attr("class", "area")
     .attr("clip-path", "url(#clip)")
     .style("fill", "url(#gradient)");
 
-  svg.append("g")
+  g.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")");
 
-  svg.append("path")
+  g.append("path")
     .attr("class", "line")
     .attr("clip-path", "url(#clip)");
 
-  svg.append("rect")
+  g.append("rect")
     .attr("class", "pane")
     .attr("width", width)
     .attr("height", height)
@@ -155,8 +171,9 @@ function draw() {
 
   zoom.x(x);
 
-  svg.select("path.area").data([data]);
-  svg.select("path.line").data([data]);
+  g.select("path.area").data([data]);
+  g.select("path.line").data([data]);
+  
   zoomed();
 }
 
@@ -170,6 +187,7 @@ function onOpenHist() {
         data = dsv.parseRows(text, function(d) {
           return d.map(Number);
         });
+        visible = true;
         draw();
       });
     });
