@@ -12,7 +12,7 @@ app.on('ready', function() {
   addListeners();
 });
 
-function handleStartupEvent(){
+function handleStartupEvent() {
   if (process.platform !== 'win32') {
     return;
   }
@@ -39,7 +39,7 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadURL('file://' + __dirname + '/html/index.html');
+  mainWindow.loadURL('file://' + __dirname + '/html/hist.html');
 }
 
 function addListeners() {

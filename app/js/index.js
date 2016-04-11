@@ -7,9 +7,8 @@ const topojson = require('topojson');
 const png = require('save-svg-as-png');
 const $ = require('jquery');
 
-const electron = require('electron');
-const dialog = electron.remote.require('dialog');
-const mainWindow = electron.remote.getCurrentWindow();
+const dialog = require('electron').remote.require('dialog');
+
 
 var addon = require("../build/Release/module.node");
 
@@ -17,11 +16,13 @@ require("d3-geo-projection")(d3);
 require("d3-tip")(d3);
 
 var map;
+var hist;
 var svg;
 var path;
 var layer1;
 var layer2;
 var fileName;
+var voronoiMap;
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -78,13 +79,9 @@ function clearVoronoi() {
 
 function redrawVoronoi() {
   clearVoronoi();
-  var voronoi = d3.geom.voronoi().clipExtent([
-    [-180, -90],
-    [180, 90]
-  ]);
 
   layer1.selectAll(".voronoi")
-    .data(voronoi(map))
+    .data(voronoiMap)
     .enter().append("svg:path")
     .attr("stroke-width", "1")
     .attr("class", "voronoi")
@@ -123,6 +120,14 @@ function redrawMap() {
   d3.selectAll("path").attr("d", path);
 }
 
+function generateVoronoi() {
+  var voronoi = d3.geom.voronoi().clipExtent([
+    [-180, -90],
+    [180, 90]
+  ]);
+  voronoiMap = voronoi(map);
+}
+
 function openFile() {
   let opts = {
     neighbours: $("#neighbours").val(),
@@ -131,15 +136,14 @@ function openFile() {
   };
   if (fileName) {
     map = addon.process(fileName, opts);
-    console.log("a");
   }
 }
 
-function onResize() {
+function onResizeHist() {
   redrawMap();
 }
 
-function onOpen() {
+function onOpenMap() {
   dialog.showOpenDialog(
     function(fileNames) {
       if (fileNames === undefined) return;
@@ -149,6 +153,7 @@ function onOpen() {
 
 function onGenerate() {
   openFile();
+  generateVoronoi();
   redrawVoronoi();
 }
 
@@ -170,18 +175,6 @@ function onDownload() {
         fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".png"), buffer);
       });
     });
-}
-
-function onFullscreen() {
-  mainWindow.setFullScreen(!mainWindow.isFullScreen());
-}
-
-function onReload() {
-  mainWindow.reload();
-}
-
-function onDevTools() {
-  mainWindow.toggleDevTools();
 }
 
 function onEquirectangular() {
@@ -216,7 +209,7 @@ function type(t) {
   if (t == 2) return "normalized";
 }
 
-function onInit() {
+function onInitMap() {
   svg = d3.select("#mapBox").append("svg")
     .attr("id", "map")
     .attr("width", "100%")
@@ -240,12 +233,6 @@ function onInit() {
       .attr("stroke-width", "2px")
       .attr("pointer-events", "none")
       .attr("d", path);
-  });
-
-  d3.tsv("../data/map.tsv", function(error, data) {
-    if (error) throw error;
-
-    map = data;
   });
 
 }

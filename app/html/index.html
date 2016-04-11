@@ -6,13 +6,14 @@
   <title>SatGraph</title>
   <link rel="stylesheet" type="text/css" href="../css/styles.css">
   <script src="../js/index.js"></script>
+  <script src="../js/common.js"></script>
 </head>
 
-<body onload="onInit()" onresize="onResize()">
+<body onload="onInitMap()" onresize="onResizeHist()">
   <div id="mapBox">
   </div>
   <div id="buttonsBox">
-    <button type="button" class="button" href="#" onclick="onOpen()">Open</button>
+    <button type="button" class="button" href="#" onclick="onOpenMap()">Open</button>
     <button type="button" class="button" href="#" onclick="onGenerate()">Generate</button>
     <button type="button" class="button" href="#" onclick="onDownload()">Download</button>
     <br>
