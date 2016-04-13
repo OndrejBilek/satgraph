@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>SatGraph - map</title>
+  <link rel="stylesheet" href="../css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="../css/styles.css">
+  <script src="../js/common.js"></script>
+  <script src="../js/map.js"></script>
+</head>
+
+<body onload="onInitMap()" onresize="onResizeHist()">
+  <div id="mapBox" class="box">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#" onclick="onSatgraph()">SatGraph</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#" onclick="onMap()">Map</a></li>
+          <li><a href="#" onclick="onHistogram()">Histogram</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#" onclick="onDevTools()">Dev Tools</a></li>
+          <li><a href="#" onclick="onFullscreen()">Fullscreen</a></li>
+          <li><a href="#" onclick="onAbout()">About</a></li>
+        </ul>
+      </div>
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <button type="button" onclick="onGenerate()" class="btn btn-default navbar-btn">Generate map</button>
+          <button type="button" onclick="onOpenMap()" class="btn btn-default navbar-btn">Load data</button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#" onclick="onSaveAsPNG()">to PNG</a></li>
+              <li><a href="#" onclick="onSaveAsSVG()">to SVG</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Geo Projection <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li class="active"><a href="#" onclick="onEquirectangular()">Equirectangular</a></li>
+              <li><a href="#" onclick="onOrthographic()">Orthographic</a></li>
+              <li><a href="#" onclick="onMollweide()">Mollweide</a></li>
+              <li><a href="#" onclick="onMercator()">Mercator</a></li>
+            </ul>
+          </div>
+        </ul>
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+            <label for="neighbours">Neighbours:</label>
+            <input type="number" value="8" class="form-control" id="neighbours">
+            <label for="ration">Ratio:</label>
+            <input type="number" value="1.2" class="form-control" id="ration">
+            <label for="type">Type:</label>
+            <select class="form-control" id="type">
+              <option value="median">Average</option>
+              <option value="average">Median</option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </nav>
+  </div>
+</body>
+
+</html>

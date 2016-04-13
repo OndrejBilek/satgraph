@@ -4,36 +4,23 @@
 <head>
   <meta charset="utf-8">
   <title>SatGraph</title>
-  <link rel="stylesheet" type="text/css" href="../css/styles.css">
-  <script src="../js/index.js"></script>
+  <link rel="stylesheet" href="../css/bootstrap.css">
   <script src="../js/common.js"></script>
+  <script src="../js/index.js"></script>
 </head>
 
-<body onload="onInitMap()" onresize="onResizeHist()">
-  <div id="mapBox">
-  </div>
-  <div id="buttonsBox">
-    <button type="button" class="button" href="#" onclick="onOpenMap()">Open</button>
-    <button type="button" class="button" href="#" onclick="onGenerate()">Generate</button>
-    <button type="button" class="button" href="#" onclick="onDownload()">Download</button>
-    <br>
-    <button type="button" class="button" href="#" onclick="onEquirectangular()">Equirectangular</button>
-    <button type="button" class="button" href="#" onclick="onOrthographic()">Orthographic</button>
-    <button type="button" class="button" href="#" onclick="onMollweide()">Mollweide</button>
-    <button type="button" class="button" href="#" onclick="onMercator()">Mercator</button>
-
-    <br>
-    <button type="button" class="button" href="#" onclick="onDevTools()">Dev Tools</button>
-    <button type="button" class="button" href="#" onclick="onFullscreen()">Fullscreen</button>
-    <button type="button" class="button" href="#" onclick="onReload()">Reload</button>
-    <br><a>Neighbours:<a>
-    <input type="text" value="8" id="neighbours"> Normalize:
-    <input type="text" value="1.2" id="normalize"> Type:
-    <select id="type">
-      <option value="median">Average</option>
-      <option value="average">Median</option>
-    </select>
-  </div>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#" onclick="onSatgraph()">SatGraph</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li><a href="#" onclick="onMap()">Map</a></li>
+        <li><a href="#" onclick="onHistogram()">Histogram</a></li>
+      </ul>
+    </div>
+  </nav>
 </body>
 
 </html>

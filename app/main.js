@@ -1,8 +1,10 @@
 'use strict';
 
-const app = require('app');
-const dialog = require('electron').dialog;
-const BrowserWindow = require('browser-window');
+const electron = require('electron');
+
+const app = electron.app;
+const dialog = electron.dialog;
+const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
@@ -39,7 +41,7 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadURL('file://' + __dirname + '/html/hist.html');
+  mainWindow.loadURL("file://" + __dirname + "/html/index.html");
 }
 
 function addListeners() {
