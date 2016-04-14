@@ -41,7 +41,7 @@ function createWindow() {
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
-  mainWindow.loadURL("file://" + __dirname + "/html/index.html");
+  mainWindow.loadURL("file://" + __dirname + "/html/map.html");
 }
 
 function addListeners() {

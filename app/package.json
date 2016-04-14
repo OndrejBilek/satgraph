@@ -15,7 +15,6 @@
     "d3-geo-projection": "^0.2.16",
     "d3-tip": "^0.6.7 ",
     "topojson": "^1.6.24",
-    "bindings": "~1.2.1",
     "save-svg-as-png": "^1.0.1",
     "jquery": "^2.2.3",
     "bootstrap": "^3.3.6"
