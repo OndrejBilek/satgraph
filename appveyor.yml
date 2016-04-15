@@ -12,5 +12,6 @@ build_script:
 
 artifacts:
   - path: 'dist\win-x64\**\*.exe'
+  - path: '**\*.nupkg'
 
 test: off
