@@ -1,18 +1,22 @@
-const d3 = require('d3');
-const $ = require('jquery');
-const fs = require('fs');
-const pa = require('path');
-const png = require('save-svg-as-png');
+"use strict";
 
-const dialog = require('electron').remote.require('dialog');
+const d3 = require("d3");
+const fs = require("fs");
+const pa = require("path");
+const png = require("save-svg-as-png");
+const jQuery = require("jquery");
 
-let visible = false;
+require("bootstrap");
+require("../js/common.js");
+
 let svg;
 let data;
 let xAxis;
 let yAxis;
 let area;
 let line;
+
+//-----------------------------------------------------------------------------
 
 function embeddCssToSvg(path, svg, cb) {
   fs.readFile(path, "utf-8", function(err, data) {
@@ -24,44 +28,11 @@ function embeddCssToSvg(path, svg, cb) {
   });
 }
 
-function onInitHist() {
-  svg = d3.select("#histBox").append("svg")
-    .attr("xmlns", "http://www.w3.org/2000/svg")
-    .attr("height", "100%")
-    .attr("width", "100%")
-    .attr("version", "1.1")
-    .attr("id", "hist");
-
-  embeddCssToSvg(pa.join(__dirname, "..", "css/hist.css"), svg, function() {
-    svg.append("rect")
-      .attr("height", "100%")
-      .attr("width", "100%")
-      .attr("fill", "white");
-  });
-}
-
-function onResizeHist() {
-  if (visible) {
-    d3.select("#main").remove();
-    draw();
-  }
-}
-
-function onDownload() {
-  var data = $("#hist")[0].outerHTML;
-
-  dialog.showSaveDialog(
-    function(p) {
-      if (p === undefined) return;
-      var parsed = pa.parse(p);
-      fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".svg"), data);
-      png.svgAsPngUri(document.getElementById("hist"), {
-        scale: 2
-      }, function(uri) {
-        var buffer = new Buffer(uri.split(",")[1], 'base64');
-        fs.writeFileSync(pa.join(parsed.dir, parsed.name + ".png"), buffer);
-      });
-    });
+function zoomed() {
+  svg.select("g.x.axis").call(xAxis);
+  svg.select("g.y.axis").call(yAxis);
+  svg.select("path.area").attr("d", area);
+  svg.select("path.line").attr("d", line);
 }
 
 function draw() {
@@ -77,8 +48,8 @@ function draw() {
     .attr("id", "main")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  let width = $("#hist").width() - margin.left - margin.right;
-  let height = $("#hist").height() - margin.top - margin.bottom;
+  let width = jQuery("#hist").width() - margin.left - margin.right;
+  let height = jQuery("#hist").height() - margin.top - margin.bottom;
 
   let x = d3.scale.linear()
     .domain([0, d3.max(data, function(d) {
@@ -173,11 +144,13 @@ function draw() {
 
   g.select("path.area").data([data]);
   g.select("path.line").data([data]);
-  
+
   zoomed();
 }
 
-function onOpenHist() {
+//-----------------------------------------------------------------------------
+
+function onLoad() {
   let dsv = d3.dsv(" ", "text/plain");
 
   dialog.showOpenDialog(
@@ -187,15 +160,38 @@ function onOpenHist() {
         data = dsv.parseRows(text, function(d) {
           return d.map(Number);
         });
-        visible = true;
         draw();
       });
     });
 }
 
-function zoomed() {
-  svg.select("g.x.axis").call(xAxis);
-  svg.select("g.y.axis").call(yAxis);
-  svg.select("path.area").attr("d", area);
-  svg.select("path.line").attr("d", line);
+function onResize() {
+  if (data) {
+    d3.select("#main").remove();
+    draw();
+  }
+}
+
+function onDownloadPNG() {
+  downloadPNG("hist");
+}
+
+function onDownloadSVG() {
+  downloadSVG("hist");
+}
+
+function onInit() {
+  svg = d3.select("#box").append("svg")
+    .attr("xmlns", "http://www.w3.org/2000/svg")
+    .attr("height", "100%")
+    .attr("width", "100%")
+    .attr("version", "1.1")
+    .attr("id", "hist");
+
+  embeddCssToSvg(pa.join(__dirname, "..", "css/hist.css"), svg, function() {
+    svg.append("rect")
+      .attr("height", "100%")
+      .attr("width", "100%")
+      .attr("fill", "white");
+  });
 }

@@ -10,27 +10,38 @@
   <script src="../js/hist.js"></script>
 </head>
 
-<body onload="onInitHist()" onresize="onResizeHist()">
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#" onclick="onSatgraph()">SatGraph</a>
+<body onload="onInit()" onresize="onResize()">
+  <div id="box" class="box">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">SatGraph</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#" onclick="onMap()">Map</a></li>
+          <li class="active"><a href="#" onclick="onHistogram()">Histogram</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#" onclick="onDevTools()">Dev Tools</a></li>
+          <li><a href="#" onclick="onFullscreen()">Fullscreen</a></li>
+          <li><a href="#" onclick="onAbout()">About</a></li>
+        </ul>
       </div>
-      <ul class="nav navbar-nav">
-        <li><a href="#" onclick="onMap()">Map</a></li>
-        <li class="active"><a href="#" onclick="onHistogram()">Histogram</a></li>
-      </ul>
-    </div>
-  </nav>
-  <div id="histBox">
-  </div>
-  <div id="buttonsBox">
-    <button type="button" class="button" href="#" onclick="onOpenHist()">Open</button>
-    <button type="button" class="button" href="#" onclick="onDownload()">Download</button>
-    <br>
-    <button type="button" class="button" href="#" onclick="onDevTools()">Dev Tools</button>
-    <button type="button" class="button" href="#" onclick="onFullscreen()">Fullscreen</button>
-    <button type="button" class="button" href="#" onclick="onReload()">Reload</button>
+      <div class="container-fluid">
+        <ul class="nav navbar-nav">
+          <button type="button" onclick="onLoad()" class="btn btn-success navbar-btn">Load data</button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#" onclick="onDownloadPNG()">to PNG</a></li>
+              <li><a href="#" onclick="onDownloadSVG()">to SVG</a></li>
+            </ul>
+          </div>
+        </ul>
+      </div>
+    </nav>
   </div>
 </body>
 

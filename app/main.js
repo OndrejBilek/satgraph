@@ -18,22 +18,24 @@ app.on('ready', function() {
 });
 
 function install(done) {
-   var target = path.basename(process.execPath);
-   executeSquirrelCommand(["--createShortcut", target], done);
+  var target = path.basename(process.execPath);
+  executeSquirrelCommand(["--createShortcut", target], done);
 };
 
 function uninstall(done) {
-   var target = path.basename(process.execPath);
-   executeSquirrelCommand(["--removeShortcut", target], done);
+  var target = path.basename(process.execPath);
+  executeSquirrelCommand(["--removeShortcut", target], done);
 };
 
 function executeSquirrelCommand(args, done) {
-   var updateDotExe = path.resolve(path.dirname(process.execPath),
-      '..', 'update.exe');
-   var child = cp.spawn(updateDotExe, args, { detached: true });
-   child.on('close', function(code) {
-      done();
-   });
+  var updateDotExe = path.resolve(path.dirname(process.execPath),
+    '..', 'update.exe');
+  var child = cp.spawn(updateDotExe, args, {
+    detached: true
+  });
+  child.on('close', function(code) {
+    done();
+  });
 };
 
 function handleSquirrelEvent() {
@@ -61,7 +63,9 @@ function handleSquirrelEvent() {
 };
 
 function createWindow() {
-  mainWindow = new BrowserWindow({icon: __dirname + "/icon.ico"});
+  mainWindow = new BrowserWindow({
+    icon: __dirname + "/icon.png"
+  });
   mainWindow.maximize();
   mainWindow.setMenu(null);
 

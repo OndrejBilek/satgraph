@@ -7,9 +7,9 @@ const topojson = require("topojson");
 const png = require("save-svg-as-png");
 const jQuery = require("jquery");
 
-const dialog = require("electron").remote.require("dialog");
 const addon = require("../build/Release/module.node");
 
+require("../js/common.js");
 require("d3-geo-projection")(d3);
 require("d3-tip")(d3);
 require("bootstrap");
@@ -199,15 +199,6 @@ function onResize() {
   drawMap();
 }
 
-function onAbout() {
-  dialog.showMessageBox({
-    type: "none",
-    buttons: ["Close"],
-    message: "SatGraph v" + process.env.npm_package_version +
-      "\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
-  });
-}
-
 function onGenerate() {
   let data = openFile();
   let voronoi = generateVoronoi(data);
@@ -215,36 +206,11 @@ function onGenerate() {
 }
 
 function onDownloadPNG() {
-  dialog.showSaveDialog({
-      filters: [{
-        name: "*.png",
-        extensions: ["png"]
-      }]
-    },
-    function(file) {
-      if (file === undefined) return;
-      png.svgAsPngUri(document.getElementById("map"), {
-        scale: 2
-      }, function(uri) {
-        let buffer = new Buffer(uri.split(",")[1], "base64");
-        fs.writeFile(file, buffer);
-      });
-    });
+  downloadPNG("map");
 }
 
 function onDownloadSVG() {
-  let data = svg.node().outerHTML;
-
-  dialog.showSaveDialog({
-      filters: [{
-        name: "*.svg",
-        extensions: ["svg"]
-      }]
-    },
-    function(file) {
-      if (file === undefined) return;
-      fs.writeFile(file, data);
-    });
+  downloadSVG("map");
 }
 
 function onProjection(value) {
@@ -269,7 +235,7 @@ function onInit() {
   validationListeners();
   jQuery("#generate").prop("disabled", true);
 
-  svg = d3.select("#mapBox").append("svg")
+  svg = d3.select("#box").append("svg")
     .attr("id", "map")
     .attr("class", "frow content")
     .attr("width", "100%")
