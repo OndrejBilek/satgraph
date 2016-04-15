@@ -1,6 +1,8 @@
 'use strict';
 
-const electron = require('electron');
+const electron = require("electron");
+const path = require("path");
+const cp = require("child_process");
 
 const app = electron.app;
 const dialog = electron.dialog;
@@ -9,35 +11,57 @@ const BrowserWindow = electron.BrowserWindow;
 let mainWindow;
 
 app.on('ready', function() {
-  handleStartupEvent();
-  createWindow();
-  addListeners();
+  if (handleSquirrelEvent()) {
+    createWindow();
+    addListeners();
+  }
 });
 
-function handleStartupEvent() {
+function install(done) {
+   var target = path.basename(process.execPath);
+   executeSquirrelCommand(["--createShortcut", target], done);
+};
+
+function uninstall(done) {
+   var target = path.basename(process.execPath);
+   executeSquirrelCommand(["--removeShortcut", target], done);
+};
+
+function executeSquirrelCommand(args, done) {
+   var updateDotExe = path.resolve(path.dirname(process.execPath),
+      '..', 'update.exe');
+   var child = cp.spawn(updateDotExe, args, { detached: true });
+   child.on('close', function(code) {
+      done();
+   });
+};
+
+function handleSquirrelEvent() {
   if (process.platform !== 'win32') {
-    return;
+    return true;
   }
 
   var squirrelCommand = process.argv[1];
   switch (squirrelCommand) {
     case '--squirrel-install':
-      app.quit();
-      return;
+      install(quit);
+      return false;
     case '--squirrel-updated':
-      app.quit();
-      return;
+      install(quit);
+      return false;
     case '--squirrel-uninstall':
-      app.quit();
-      return
+      uninstall(quit);
+      return false;
     case '--squirrel-obsolete':
-      app.quit();
-      return;
+      quit();
+      return false;
   }
+
+  return true;
 };
 
 function createWindow() {
-  mainWindow = new BrowserWindow();
+  mainWindow = new BrowserWindow({icon: __dirname + "/icon.ico"});
   mainWindow.maximize();
   mainWindow.setMenu(null);
 
