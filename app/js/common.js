@@ -25,9 +25,10 @@ function onHistogram() {
 
 function onAbout() {
   dialog.showMessageBox({
-    type: "none",
+    title: "About",
+    type: "info",
     buttons: ["Close"],
-    message: "SatGraph v0.1.0\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
+    message: "SatGraph v0.1.2\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
   });
 }
 

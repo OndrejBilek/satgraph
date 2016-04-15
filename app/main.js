@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const electron = require("electron");
 const path = require("path");
@@ -6,55 +6,58 @@ const cp = require("child_process");
 
 const app = electron.app;
 const dialog = electron.dialog;
+const autoUpdater = electron.autoUpdater;
 const BrowserWindow = electron.BrowserWindow;
 
 let mainWindow;
 
-app.on('ready', function() {
+app.on("ready", function() {
   if (handleSquirrelEvent()) {
     createWindow();
     addListeners();
+    registerUpdater();
   }
 });
 
 function install(done) {
-  var target = path.basename(process.execPath);
+  let target = path.basename(process.execPath);
   executeSquirrelCommand(["--createShortcut", target], done);
 };
 
 function uninstall(done) {
-  var target = path.basename(process.execPath);
+  let target = path.basename(process.execPath);
   executeSquirrelCommand(["--removeShortcut", target], done);
 };
 
 function executeSquirrelCommand(args, done) {
-  var updateDotExe = path.resolve(path.dirname(process.execPath),
-    '..', 'update.exe');
-  var child = cp.spawn(updateDotExe, args, {
+  let updateDotExe = path.resolve(path.dirname(process.execPath),
+    "..", "update.exe");
+  let child = cp.spawn(updateDotExe, args, {
     detached: true
   });
-  child.on('close', function(code) {
+  child.on("close", function(code) {
     done();
   });
 };
 
 function handleSquirrelEvent() {
-  if (process.platform !== 'win32') {
+  if (process.platform !== "win32") {
     return true;
   }
 
-  var squirrelCommand = process.argv[1];
+  let squirrelCommand = process.argv[1];
   switch (squirrelCommand) {
-    case '--squirrel-install':
+    case "--squirrel-install":
       install(quit);
       return false;
-    case '--squirrel-updated':
+    case "--squirrel-updated":
       install(quit);
+      updated();
       return false;
-    case '--squirrel-uninstall':
+    case "--squirrel-uninstall":
       uninstall(quit);
       return false;
-    case '--squirrel-obsolete':
+    case "--squirrel-obsolete":
       quit();
       return false;
   }
@@ -73,7 +76,46 @@ function createWindow() {
 }
 
 function addListeners() {
-  app.on('window-all-closed', quit);
+  app.on("window-all-closed", quit);
+  autoUpdater.on("update-available", updateAvailable);
+  autoUpdater.on("update-downloaded", updateDownloaded);
+}
+
+function updateAvailable() {
+  dialog.showMessageBox({
+    type: "info",
+    buttons: ["Ok"],
+    message: "Update available."
+  });
+}
+
+function updateDownloaded() {
+  dialog.showMessageBox({
+    title: "Application updater",
+    type: "question",
+    buttons: ["Yes", "No"],
+    message: "Update available\nDo you want to update now?"
+  }, function(response) {
+    if (response == 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+}
+
+function updated() {
+  dialog.showMessageBox({
+    title: "Application updater",
+    type: "info",
+    buttons: ["Ok"],
+    message: "Update successfully installed"
+  });
+}
+
+function registerUpdater() {
+  if (process.platform == "win32") {
+    //autoUpdater.setFeedURL("");
+    //autoUpdater.checkForUpdates();
+  }
 }
 
 function quit() {
