@@ -1,5 +1,6 @@
 {
   "name": "satgraph",
+  "productName": "SatGraph",
   "version": "0.1.0",
   "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
   "author": "Ondřej Bílek <bilekon1@fit.cvut.cz> (http://ondrejbilek.cz/)",

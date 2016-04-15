@@ -17,7 +17,8 @@
     "url": "https://github.com/OndrejBilek/satgraph.git"
   },
   "build": {
-    "app-bundle-id": "cz.ondrejbilek.satgraph"
+    "app-bundle-id": "cz.ondrejbilek.satgraph",
+    "productName": "SatGraph"
   },
   "devDependencies": {
     "electron-rebuild": "~1.1.3",
