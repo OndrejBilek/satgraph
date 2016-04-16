@@ -23,4 +23,4 @@ deploy:
     secure: oUZJo0StSoP/y+5sMMSDM5UPr5/Bcq5QXgAuJeFrQKVQvQxyVqzxtqMhZqbjgfi9nrBmXFY7tWnA41ckpRQSURVUq+WAHydtkB38XsvNMmeAJWE8QRL1Iws7LYU1GiDVQlxanUdhMDoj0Cjqsr1gUDmMPZ1rZELVn4NlwOG7GdrD0rbvT631NqHUgbhclV/f/De8z12ABZND/n+O5DpcGXAlOdFkBonQVoSyfAdWpCJyLv7WJWyLudLoOiX6/CRptxDUo2NmaFflkl8w42NC3Dmj316yrhJf1J0La+QGdKhEpaM8mJWTuPD2xW3QZspRZH0/luGWsl3n3Ru6Lg/e81CYTdOjvVr2E9rCxTN9KUJJjjM3idJo5wX1EX9A/8tXvjn0S7oi0WqiR6y5NM+6wm/tXGoMn9n2s1cZnHA+d4/zMQs/6nKR3GCiZIxekZ5UN2pk4vMh6Yf8+ZubI0rvtJ82r3qTAwVURIMj+vjVDTN9wyv3iidhFTwYGb1neGjq6FKMvlaOU/4dH6s5XkHaikl9AnhWGwqEcy/rLp7Qwqwjz/eOCDaoF8yNADeNy3k9FyxD9E+/nELYXiDkjpd0YvY3jh9nnqN3co0hT3xD1xyE6pGT6dAMsGj8eiuWPtikjYnVVk/0Xw6mA1Yy04VDH/bToyGlFqvAR4n1iSAestI=
   file: "dist/*.deb"
   on:
-    repo: OndrejBilek/satgraph
+    tags: true
