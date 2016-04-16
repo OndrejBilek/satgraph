@@ -14,4 +14,11 @@ artifacts:
   - path: 'dist\win-x64\**\*.exe'
   - path: '**\*.nupkg'
 
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: jCppa1myevxFxrEHErHpzqobQRAvqnW5c90ukBAC2qBuXDGiQHxxbF3DiM+9eWNN
+  on:
+    appveyor_repo_tag: true
+
 test: off
