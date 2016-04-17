@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include <node.h>
 using namespace std;
 
@@ -15,28 +16,36 @@ public:
 
   Satgraph(const string&,
            v8::Isolate *,
-           double,
            int,
-           const string&);
+           double,
+           double);
   v8::Local<v8::Array>getPackedData();
 
 private:
 
-  void loadDat(const string&);
-  void clearComputed();
-  void packDat();
-  void prepDat();
-  void normalizeDat();
-  double prepNaive(int,
-                   int,
-                   size_t);
+  void   loadDat(const string&);
+  void   clearComputed();
+  void   packDat();
+  void   prepDat();
+  void   cleanDat();
+  double prep(int,
+              int,
+              int);
   void   getNeighbour(int,
                       int,
-                      vector<double>&);
-  double average(vector<double>&);
-  double median(vector<double>&);
-  void   kNearest(int, int, size_t, vector<double>&);
-  double normalize(int, int, size_t);
+                      int *,
+                      int,
+                      double *,
+                      double *);
+  double sum(vector<double>&);
+  void   kNearest(int,
+                  int,
+                  int,
+                  double *,
+                  double *);
+  double clean(int,
+               int,
+               int);
 
   v8::Isolate *_isolate;
   v8::Local<v8::Array> _packedData;
@@ -44,9 +53,9 @@ private:
   double _map[180][360];
   int    _computed[180][360];
 
-  double _normalize;
+  double _diff;
+  double _smooth;
   int    _neighbours;
-  const string& _type;
   const string& _path;
 };
 

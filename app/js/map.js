@@ -22,7 +22,8 @@ let file;
 let projection;
 
 let nform = true;
-let rform = true;
+let sform = true;
+let dform = true;
 let scale = 330;
 let rotate = [0, 0];
 
@@ -56,10 +57,10 @@ let zoom = d3.behavior.zoom()
 //-----------------------------------------------------------------------------
 
 function type(t) {
-  if (!t) return "N/A";
+  if (t == null) return "N/A";
   if (t == 0) return "original";
-  if (t == 1) return "computed";
-  if (t == 2) return "corrected";
+  if (t == 1) return "imputed";
+  if (t == 2) return "cleaned";
 }
 
 function dragged() {
@@ -100,8 +101,8 @@ function drawMap() {
 function openFile() {
   let opts = {
     neighbours: jQuery("#neighbours").val(),
-    normalize: jQuery("#ratio").val(),
-    type: jQuery("#type").val()
+    smooth: jQuery("#smooth").val(),
+    diff: jQuery("#diff").val()
   };
   if (file) {
     return addon.process(file, opts);
@@ -151,7 +152,7 @@ function drawVoronoi(data) {
 }
 
 function validate() {
-  if (nform && rform && file) {
+  if (nform && sform && dform && file) {
     jQuery("#generate").prop("disabled", false);
   } else {
     jQuery("#generate").prop("disabled", true);
@@ -171,14 +172,26 @@ function validationListeners() {
     validate();
   });
 
-  jQuery("#ratio").on("input", function() {
+  jQuery("#smooth").on("input", function() {
     let val = parseFloat(jQuery(this).val());
-    if (jQuery.isNumeric(jQuery(this).val()) && (val >= 1 || val == 0)) {
-      jQuery("#rform").removeClass("has-error");
-      rform = true;
+    if (jQuery.isNumeric(jQuery(this).val()) && (val >= 0)) {
+      jQuery("#sform").removeClass("has-error");
+      sform = true;
     } else {
-      jQuery("#rform").addClass("has-error");
-      rform = false;
+      jQuery("#sform").addClass("has-error");
+      sform = false;
+    }
+    validate();
+  });
+
+  jQuery("#diff").on("input", function() {
+    let val = parseFloat(jQuery(this).val());
+    if (jQuery.isNumeric(jQuery(this).val()) && (val >= 0)) {
+      jQuery("#dform").removeClass("has-error");
+      dform = true;
+    } else {
+      jQuery("#dform").addClass("has-error");
+      dform = false;
     }
     validate();
   });

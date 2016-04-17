@@ -2,70 +2,69 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>SatGraph - map</title>
-  <link rel="stylesheet" href="../css/bootstrap.css">
-  <link rel="stylesheet" type="text/css" href="../css/styles.css">
-  <script src="../js/common.js"></script>
-  <script src="../js/map.js"></script>
+    <meta charset="utf-8">
+    <title>SatGraph - map</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <script src="../js/common.js"></script>
+    <script src="../js/map.js"></script>
 </head>
 
 <body onload="onInit()" onresize="onResize()">
-  <div id="box" class="box">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">SatGraph</a>
-        </div>
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="#" onclick="onMap()">Map</a></li>
-          <li><a href="#" onclick="onHistogram()">Histogram</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#" onclick="onDevTools()">Dev Tools</a></li>
-          <li><a href="#" onclick="onFullscreen()">Fullscreen</a></li>
-          <li><a href="#" onclick="onAbout()">About</a></li>
-        </ul>
-      </div>
-      <div class="container-fluid">
-        <ul class="nav navbar-nav">
-          <button id="generate" type="button" onclick="onGenerate()" class="btn btn-success navbar-btn">Generate map</button>
-          <button type="button" onclick="onLoad()" class="btn btn-default navbar-btn">Load data</button>
-          <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Export <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a href="#" onclick="onDownloadPNG()">to PNG</a></li>
-              <li><a href="#" onclick="onDownloadSVG()">to SVG</a></li>
-            </ul>
-          </div>
-        </ul>
-        <form class="navbar-form navbar-right" role="form">
-          <label for="projection">Geo projection: </label>
-          <select class="form-control" id="projection" onchange="onProjection(value)">
-            <option value="equirectangular">Equirectangular</option>
-            <option value="orthographic">Orthographic</option>
-            <option value="mollweide">Mollweide</option>
-            <option value="mercator">Mercator</option>
-          </select>
-          <div id="nform" class="form-group">
-            <label for="neighbours" class="control-label">Neighbours: </label>
-            <input type="text" value="8" class="form-control" id="neighbours">
-          </div>
-          <div id="rform" class="form-group">
-            <label for="ratio" class="control-label">Ratio: </label>
-            <input type="text" value="1.2" class="form-control" id="ratio">
-          </div>
-          <label for="type">Type: </label>
-          <select class="form-control" id="type">
-            <option value="median">Average</option>
-            <option value="average">Median</option>
-          </select>
-        </form>
-      </div>
-    </nav>
-  </div>
+    <div id="box" class="box">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">SatGraph</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#" onclick="onMap()">Map</a></li>
+                    <li><a href="#" onclick="onHistogram()">Histogram</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" onclick="onDevTools()">Dev Tools</a></li>
+                    <li><a href="#" onclick="onFullscreen()">Fullscreen</a></li>
+                    <li><a href="#" onclick="onAbout()">About</a></li>
+                </ul>
+            </div>
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <button id="generate" type="button" onclick="onGenerate()" class="btn btn-success navbar-btn">Generate map</button>
+                    <button type="button" onclick="onLoad()" class="btn btn-default navbar-btn">Load data</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Export <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" onclick="onDownloadPNG()">to PNG</a></li>
+                            <li><a href="#" onclick="onDownloadSVG()">to SVG</a></li>
+                        </ul>
+                    </div>
+                </ul>
+                <form class="navbar-form navbar-right" role="form">
+                    <label for="projection">Geo projection: </label>
+                    <select class="form-control" id="projection" onchange="onProjection(value)">
+                        <option value="equirectangular">Equirectangular</option>
+                        <option value="orthographic">Orthographic</option>
+                        <option value="mollweide">Mollweide</option>
+                        <option value="mercator">Mercator</option>
+                    </select>
+                    <div id="nform" class="form-group">
+                        <label for="neighbours" class="control-label">Neighbours: </label>
+                        <input type="text" value="8" class="form-control" id="neighbours">
+                    </div>
+                    <div id="sform" class="form-group">
+                        <label for="smooth" class="control-label">Smooth: </label>
+                        <input type="text" value="1.0" class="form-control" id="smooth">
+                    </div>
+                    <div id="dform" class="form-group">
+                        <label for="diff" class="control-label">Clean diff: </label>
+                        <input type="text" value="1.0" class="form-control" id="diff">
+                    </div>
+                </form>
+            </div>
+        </nav>
+    </div>
 </body>
 
 </html>

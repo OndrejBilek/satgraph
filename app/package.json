@@ -1,23 +1,23 @@
 {
-  "name": "satgraph",
-  "productName": "SatGraph",
-  "version": "0.1.2",
-  "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
-  "author": "Ondřej Bílek <bilekon1@fit.cvut.cz> (http://ondrejbilek.cz/)",
-  "main": "./main.js",
-  "private": "true",
-  "gypfile": "true",
-  "scripts": {
-    "compile": "node-gyp rebuild",
-    "start": "npm run compile && electron ."
-  },
-  "dependencies": {
-    "d3": "^3.5.16",
-    "d3-geo-projection": "^0.2.16",
-    "d3-tip": "^0.6.7 ",
-    "topojson": "^1.6.24",
-    "save-svg-as-png": "^1.0.1",
-    "jquery": "^2.2.3",
-    "bootstrap": "^3.3.6"
-  }
+    "name": "satgraph",
+    "productName": "SatGraph",
+    "version": "0.2.0",
+    "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
+    "author": "Ondřej Bílek <bilekon1@fit.cvut.cz> (http://ondrejbilek.cz/)",
+    "main": "./main.js",
+    "private": "true",
+    "gypfile": "true",
+    "scripts": {
+        "compile": "node-gyp rebuild",
+        "start": "npm run compile && electron ."
+    },
+    "dependencies": {
+        "d3": "^3.5.16",
+        "d3-geo-projection": "^0.2.16",
+        "d3-tip": "^0.6.7 ",
+        "topojson": "^1.6.24",
+        "save-svg-as-png": "^1.0.1",
+        "jquery": "^2.2.3",
+        "bootstrap": "^3.3.6"
+    }
 }

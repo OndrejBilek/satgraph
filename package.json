@@ -1,28 +1,28 @@
 {
-  "name": "satgraph",
-  "version": "0.1.2",
-  "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
-  "author": "Ondřej Bílek <bilekon1@fit.cvut.cz> (http://ondrejbilek.cz/)",
-  "main": "main.js",
-  "private": "true",
-  "scripts": {
-    "postinstall": "install-app-deps",
-    "start": "cd app && npm run compile && electron .",
-    "pack": "build",
-    "dist": "build",
-    "release": "build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OndrejBilek/satgraph.git"
-  },
-  "build": {
-    "app-bundle-id": "cz.ondrejbilek.satgraph",
-    "productName": "SatGraph"
-  },
-  "devDependencies": {
-    "electron-rebuild": "~1.1.3",
-    "electron-builder": "~3.1.1",
-    "electron-prebuilt": "^0.37.2"
-  }
+    "name": "satgraph",
+    "version": "0.2.0",
+    "description": "Graphical display of radiation data of spacecraft payload SATRAM/Timepix",
+    "author": "Ondřej Bílek <bilekon1@fit.cvut.cz> (http://ondrejbilek.cz/)",
+    "main": "main.js",
+    "private": "true",
+    "scripts": {
+        "postinstall": "install-app-deps",
+        "start": "cd app && npm run compile && electron .",
+        "pack": "build",
+        "dist": "build",
+        "release": "build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OndrejBilek/satgraph.git"
+    },
+    "build": {
+        "app-bundle-id": "cz.ondrejbilek.satgraph",
+        "productName": "SatGraph"
+    },
+    "devDependencies": {
+        "electron-rebuild": "~1.1.3",
+        "electron-builder": "~3.1.1",
+        "electron-prebuilt": "^0.37.2"
+    }
 }

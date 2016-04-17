@@ -6,8 +6,9 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   if (args.Length() == 2) {
     std::string path, type;
-    int    neighbours = 0;
-    double normalize  = 0;
+    int neighbours = 0;
+    double smooth  = 0;
+    double diff    = 0;
 
     if (args[0]->IsString()) {
       path = std::string(*v8::String::Utf8Value(args[0]));
@@ -18,14 +19,13 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
       neighbours =
         params->Get(v8::String::NewFromUtf8(isolate,
                                             "neighbours"))->IntegerValue();
-      normalize =
-        params->Get(v8::String::NewFromUtf8(isolate, "normalize"))->NumberValue();
-      v8::String::Utf8Value v8type(params->Get(v8::String::NewFromUtf8(isolate,
-                                                                       "type"))->ToString());
-      type = std::string(*v8type);
+      smooth =
+        params->Get(v8::String::NewFromUtf8(isolate, "smooth"))->NumberValue();
+      diff =
+        params->Get(v8::String::NewFromUtf8(isolate, "diff"))->NumberValue();
     }
 
-    Satgraph satgraph(path, isolate, normalize, neighbours, type);
+    Satgraph satgraph(path, isolate, neighbours, smooth, diff);
     args.GetReturnValue().Set(satgraph.getPackedData());
   } else {
     isolate->ThrowException(v8::Exception::TypeError(

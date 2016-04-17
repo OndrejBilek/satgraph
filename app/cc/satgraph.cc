@@ -3,19 +3,19 @@
 
 Satgraph::Satgraph(const string& path,
                    v8::Isolate  *isolate,
-                   double        normalize,
                    int           neighbours,
-                   const string& type) :
+                   double        smooth,
+                   double        diff) :
   _isolate(isolate),
-  _normalize(normalize),
+  _diff(diff),
+  _smooth(smooth),
   _neighbours(neighbours),
-  _type(type),
   _path(path) {
   _packedData = v8::Array::New(_isolate, 4);
 
   clearComputed();
   loadDat(_path);
-  normalizeDat();
+  cleanDat();
   prepDat();
   packDat();
 }
@@ -91,7 +91,14 @@ v8::Local<v8::Array>Satgraph::getPackedData() {
   return _packedData;
 }
 
-void Satgraph::getNeighbour(int i, int x,  vector<double>& bins) {
+void Satgraph::getNeighbour(int     i,
+                            int     x,
+                            int    *k,
+                            int     offset,
+                            double *sum,
+                            double *weights) {
+  double distance = (double)offset;
+
   if (i >= 180) i -= 180;
 
   if (i < 0) i += 180;
@@ -100,117 +107,85 @@ void Satgraph::getNeighbour(int i, int x,  vector<double>& bins) {
 
   if (x < 0) x += 360;
 
-  if ((_map[i][x] != -1) && (_computed[i][x] != 1)) {
-    bins.push_back(_map[i][x]);
+  if ((_map[i][x] != -1) && (_computed[i][x] == 0)) {
+    double weight = pow(distance, -1.0 * _smooth);
+    *weights += weight;
+    *sum     += _map[i][x] * weight;
+    (*k)--;
   }
 }
 
-double Satgraph::average(vector<double>& bins) {
-  double sum = 0;
-
-  for (auto bin : bins) {
-    sum += bin;
-  }
-
-  return sum / bins.size();
-}
-
-double Satgraph::median(vector<double>& bins) {
-  double median;
-  size_t size = bins.size();
-
-  sort(bins.begin(), bins.end());
-
-  if (size % 2 == 0)  {
-    median = (bins[size / 2 - 1] + bins[size / 2]) / 2;
-  } else {
-    median = bins[size / 2];
-  }
-
-  return median;
-}
-
-void Satgraph::kNearest(int i, int x, size_t k, vector<double>& bins) {
+void Satgraph::kNearest(int i, int x, int k, double *sum, double *weights) {
   int offset = 1;
 
   while (true) {
-    getNeighbour(i + offset, x, bins);
+    getNeighbour(i + offset, x, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i, x + offset, bins);
+    getNeighbour(i, x + offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i + offset, x + offset, bins);
+    getNeighbour(i + offset, x + offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i - offset, x, bins);
+    getNeighbour(i - offset, x, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i, x - offset, bins);
+    getNeighbour(i, x - offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i - offset, x - offset, bins);
+    getNeighbour(i - offset, x - offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i - offset, x + offset, bins);
+    getNeighbour(i - offset, x + offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
-    getNeighbour(i + offset, x - offset, bins);
+    getNeighbour(i + offset, x - offset, &k, offset, sum, weights);
 
-    if (bins.size() >= k) return;
+    if (k == 0) return;
 
     offset++;
   }
 }
 
-double Satgraph::normalize(int i, int x, size_t k) {
-  double value = 0;
+double Satgraph::clean(int i, int x, int k) {
+  double sum     = 0;
+  double weights = 0;
 
-  vector<double> bins;
-  kNearest(i, x, k, bins);
+  kNearest(i, x, k, &sum, &weights);
 
-  if (_type == "median") {
-    value = median(bins);
-  } else if (_type == "average") {
-    value = average(bins);
-  }
+  double cleaned = sum / weights;
+  double diff    = abs(cleaned - _map[i][x]);
 
-  if (_map[i][x] > _normalize * value) {
+  if (diff > _diff) {
     _computed[i][x] = 2;
-    return value;
+    return cleaned;
+  } else {
+    return _map[i][x];
   }
-
-  return _map[i][x];
 }
 
-double Satgraph::prepNaive(int i, int x, size_t k) {
-  double value = 0;
+double Satgraph::prep(int i, int x, int k) {
+  double sum     = 0;
+  double weights = 0;
 
-  vector<double> bins;
-  kNearest(i, x, k, bins);
-
-  if (_type == "median") {
-    value = median(bins);
-  } else if (_type == "average") {
-    value = average(bins);
-  }
-
-  return value;
+  kNearest(i, x, k, &sum, &weights);
+  return sum / weights;
 }
 
-void Satgraph::normalizeDat() {
-  if ((_normalize != 0) && (_neighbours != 0)) {
+void Satgraph::cleanDat() {
+  if ((_diff != 0) && (_neighbours != 0)) {
     for (int i = 8; i < 171; i++) {
       for (int x = 0; x < 360; x++) {
         if (_map[i][x] != -1) {
-          _map[i][x] = normalize(i, x, _neighbours);
+          _map[i][x] = clean(i, x, _neighbours);
         }
       }
     }
@@ -218,11 +193,11 @@ void Satgraph::normalizeDat() {
 }
 
 void Satgraph::prepDat() {
-  if (_neighbours != 0) {
+  if ((_smooth != 0) && (_neighbours != 0)) {
     for (int i = 8; i < 171; i++) {
       for (int x = 0; x < 360; x++) {
         if (_map[i][x] == -1) {
-          _map[i][x]      = prepNaive(i, x, _neighbours);
+          _map[i][x]      = prep(i, x, _neighbours);
           _computed[i][x] = 1;
         }
       }

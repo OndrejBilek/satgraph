@@ -28,7 +28,7 @@ function onAbout() {
     title: "About",
     type: "info",
     buttons: ["Close"],
-    message: "SatGraph v0.1.2\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
+    message: "SatGraph v0.2.0\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
   });
 }
 

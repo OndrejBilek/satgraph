@@ -1,31 +1,34 @@
 html, body {
-  height: 100%;
-  overflow: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 label {
-  margin-left: 5px;
+    margin-left: 5px;
+}
+input {
+    width: 100px !important;
 }
 .box {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
 .box .frow {
-  flex: 0 1 30px;
+    flex: 0 1 30px;
 }
 .box .frow.content {
-  flex: 1 1 auto;
-  height: 100%;
+    flex: 1 1 auto;
+    height: 100%;
 }
 .navbar {
-  margin-bottom: 0;
-  min-height: initial;
+    margin-bottom: 0;
+    min-height: initial;
 }
 .d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
 }
