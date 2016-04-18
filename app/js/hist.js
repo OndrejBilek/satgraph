@@ -28,6 +28,15 @@ function embeddCssToSvg(path, svg, cb) {
   });
 }
 
+function correct() {
+  data.sort(function(a, b) {
+    return a[0] - b[0];
+  });
+  data = data.filter(function(item, pos, ary) {
+    return !pos || item[0] != ary[pos - 1][0];
+  })
+}
+
 function zoomed() {
   svg.select("g.x.axis").call(xAxis);
   svg.select("g.y.axis").call(yAxis);
@@ -160,6 +169,7 @@ function onLoad() {
         data = dsv.parseRows(text, function(d) {
           return d.map(Number);
         });
+        correct();
         draw();
       });
     });
