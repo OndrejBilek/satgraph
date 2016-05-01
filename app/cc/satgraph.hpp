@@ -18,8 +18,10 @@ public:
            v8::Isolate *,
            int,
            double,
-           double);
+           double,
+           int);
   v8::Local<v8::Array>getPackedData();
+  ~Satgraph();
 
 private:
 
@@ -50,12 +52,17 @@ private:
   v8::Isolate *_isolate;
   v8::Local<v8::Array> _packedData;
 
-  double _map[180][360];
-  int    _computed[180][360];
+  double **_map;
+  int    **_computed;
 
   double _diff;
   double _smooth;
+  double _step;
   int    _neighbours;
+  int    _width;
+  int    _height;
+  int    _start;
+  int    _stop;
   const string& _path;
 };
 

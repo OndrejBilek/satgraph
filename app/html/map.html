@@ -31,6 +31,7 @@
                 <ul class="nav navbar-nav">
                     <button id="generate" type="button" onclick="onGenerate()" class="btn btn-success navbar-btn">Generate map</button>
                     <button type="button" onclick="onLoad()" class="btn btn-default navbar-btn">Load data</button>
+                    <button type="button" onclick="onParams()" class="btn btn-default navbar-btn">Load parameters</button>
                     <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Export <span class="caret"></span>
@@ -42,6 +43,13 @@
                     </div>
                 </ul>
                 <form class="navbar-form navbar-right" role="form">
+                    <label for="binning">Binning: </label>
+                    <select class="form-control" id="binning">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                    </select>
                     <label for="projection">Geo projection: </label>
                     <select class="form-control" id="projection" onchange="onProjection(value)">
                         <option value="equirectangular">Equirectangular</option>

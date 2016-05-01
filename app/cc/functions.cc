@@ -7,6 +7,7 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() == 2) {
     std::string path, type;
     int neighbours = 0;
+    int binning    = 0;
     double smooth  = 0;
     double diff    = 0;
 
@@ -23,9 +24,12 @@ void process(const v8::FunctionCallbackInfo<v8::Value>& args) {
         params->Get(v8::String::NewFromUtf8(isolate, "smooth"))->NumberValue();
       diff =
         params->Get(v8::String::NewFromUtf8(isolate, "diff"))->NumberValue();
+      binning =
+        params->Get(v8::String::NewFromUtf8(isolate,
+                                            "binning"))->IntegerValue();
     }
 
-    Satgraph satgraph(path, isolate, neighbours, smooth, diff);
+    Satgraph satgraph(path, isolate, neighbours, smooth, diff, binning);
     args.GetReturnValue().Set(satgraph.getPackedData());
   } else {
     isolate->ThrowException(v8::Exception::TypeError(

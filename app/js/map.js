@@ -13,12 +13,14 @@ require("../js/common.js");
 require("d3-geo-projection")(d3);
 require("d3-tip")(d3);
 require("bootstrap");
+require('d3-svg-legend');
 
 //-----------------------------------------------------------------------------
 
 let g;
 let svg;
 let file;
+let params;
 let projection;
 
 let nform = true;
@@ -27,9 +29,17 @@ let dform = true;
 let scale = 330;
 let rotate = [0, 0];
 
-let color = d3.scale.log()
+let color = d3.scale.linear()
   .range(["blue", "green", "yellow", "red"])
   .domain([1, 3, 5, 7]);
+
+let legend = d3.legend.color()
+  .shapeWidth(30)
+  .orient('horizontal')
+  .scale(color)
+  .title("Dose rate [log nGy/h]")
+  .cells([2, 3, 4, 5, 6, 7, 8])
+  .labelFormat(d3.format("E>2"));
 
 let tip = d3.tip()
   .attr("class", "d3-tip")
@@ -78,6 +88,8 @@ function zoomed() {
 
 function clearVoronoi() {
   d3.selectAll(".voronoi").remove();
+  d3.selectAll(".params").remove();
+  d3.selectAll(".legend").remove();
   jQuery(".d3-tip").css("opacity", "0");
 }
 
@@ -102,7 +114,8 @@ function openFile() {
   let opts = {
     neighbours: jQuery("#neighbours").val(),
     smooth: jQuery("#smooth").val(),
-    diff: jQuery("#diff").val()
+    diff: jQuery("#diff").val(),
+    binning: jQuery("#binning").val()
   };
   if (file) {
     return addon.process(file, opts);
@@ -136,10 +149,18 @@ function drawVoronoi(data) {
       return "M" + d.join("L") + "Z";
     })
     .attr("fill", function(d) {
-      return color(d.point[2]);
+      if (d.point[2] == 0 || d.point[2] == -1) {
+        return "black"
+      } else {
+        return color(d.point[2]);
+      }
     })
     .attr("stroke", function(d) {
-      return color(d.point[2]);
+      if (d.point[2] == 0 || d.point[2] == -1) {
+        return "black"
+      } else {
+        return color(d.point[2]);
+      }
     })
     .attr("visibility", function(d) {
       d = d.map(projection);
@@ -149,6 +170,43 @@ function drawVoronoi(data) {
     })
     .on("mouseover", tip.show)
     .on("mouseout", tip.hide);
+
+  if (params) {
+    g.selectAll(".params")
+      .data(params)
+      .enter().append("svg:circle")
+      .attr("class", "params")
+      .attr("cx", function(d) {
+        return projection([d[7], d[8]])[0];
+      })
+      .attr("cy", function(d) {
+        return projection([d[7], d[8]])[1];
+      })
+      .attr("r", function(d) {
+        let val = d[16];
+        if (val == 0) {
+          return "0px";
+        } else if (val > 0 && val <= 100) {
+          return "2px";
+        } else if (val > 100 && val <= 500) {
+          return "4px";
+        } else if (val > 500 && val <= 800) {
+          return "6px";
+        } else if (val > 800) {
+          return "8px";
+        }
+      })
+      .attr("fill", "none")
+      .attr("stroke", "black")
+  }
+
+  g.append("rect")
+    .attr("width", "232px")
+    .attr("height", "80px")
+    .attr("fill", "white")
+    .attr("class", "legend")
+    .attr("transform", "translate(15,5)");
+
 }
 
 function validate() {
@@ -205,6 +263,20 @@ function onLoad() {
       if (fileNames === undefined) return;
       file = fileNames[0];
       validate();
+    });
+}
+
+function onParams() {
+  let dsv = d3.dsv(" ", "text/plain");
+
+  dialog.showOpenDialog(
+    function(fileNames) {
+      if (fileNames === undefined) return;
+      d3.text(fileNames[0], function(text) {
+        params = dsv.parseRows(text, function(d) {
+          return d.map(Number);
+        });
+      });
     });
 }
 
@@ -270,15 +342,33 @@ function onInit() {
     projection = d3.geo.equirectangular()
       .precision(.1);
     let path = d3.geo.path().projection(projection);
-
-    svg.append("g").append("path")
+    let graticule = d3.geo.graticule().step([20, 20]);
+    let map = svg.append("g");
+    map.append("path")
       .datum(topojson.feature(data, data.objects.land))
       .attr("fill-opacity", "0.0")
       .attr("stroke", "#000")
       .attr("stroke-width", "1px")
       .attr("pointer-events", "none")
       .attr("d", path);
+
+    map.append("path")
+      .datum(graticule)
+      .attr("fill", "none")
+      .attr("stroke", "#000")
+      .attr("d", path);
+
+    map.append("path")
+      .datum(graticule.outline)
+      .attr("fill", "none")
+      .attr("stroke", "#000")
+      .attr("stroke-width", "2px")
+      .attr("d", path);
+
+    svg.append("g")
+      .attr("transform", "translate(20,20)")
+      .call(legend);
+
     drawMap();
   });
-
 }

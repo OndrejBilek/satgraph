@@ -28,7 +28,7 @@ function onAbout() {
     title: "About",
     type: "info",
     buttons: ["Close"],
-    message: "SatGraph v0.2.0\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
+    message: "SatGraph v0.3.0\n\nOndřej Bílek\nbilekon1@fit.cvut.cz\ngithub.com/OndrejBilek/satgraph"
   });
 }
 
@@ -42,7 +42,7 @@ function downloadPNG(el) {
     function(file) {
       if (file === undefined) return;
       png.svgAsPngUri(document.getElementById(el), {
-        scale: 2
+        scale: 1
       }, function(uri) {
         let buffer = new Buffer(uri.split(",")[1], "base64");
         fs.writeFile(file, buffer);

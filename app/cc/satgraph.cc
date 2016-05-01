@@ -5,13 +5,58 @@ Satgraph::Satgraph(const string& path,
                    v8::Isolate  *isolate,
                    int           neighbours,
                    double        smooth,
-                   double        diff) :
+                   double        diff,
+                   int           binning) :
   _isolate(isolate),
   _diff(diff),
   _smooth(smooth),
   _neighbours(neighbours),
   _path(path) {
+  switch (binning) {
+  case 1:
+    _width  = 360;
+    _height = 180;
+    _step   = 1;
+    _start  = 8;
+    _stop   = 171;
+    break;
+
+  case 2:
+    _width  = 720;
+    _height = 360;
+    _step   = 0.5;
+    _start  = 16;
+    _stop   = 343;
+    break;
+
+  case 4:
+    _width  = 1440;
+    _height = 720;
+    _step   = 0.25;
+    _start  = 32;
+    _stop   = 687;
+    break;
+
+  case 6:
+    _width  = 2160;
+    _height = 1080;
+    _step   = 1.0 / 6.0;
+    _start  = 48;
+    _stop   = 1031;
+    break;
+  }
+
   _packedData = v8::Array::New(_isolate, 4);
+  _map        = new double *[_height];
+  _computed   = new int *[_height];
+
+  for (int i = 0; i < _height; i++) {
+    _map[i] = new double[_width];
+  }
+
+  for (int i = 0; i < _height; i++) {
+    _computed[i] = new int[_width];
+  }
 
   clearComputed();
   loadDat(_path);
@@ -20,9 +65,21 @@ Satgraph::Satgraph(const string& path,
   packDat();
 }
 
+Satgraph::~Satgraph() {
+  for (int i = 0; i < _height; i++) {
+    delete[] _map[i];
+  }
+  delete[] _map;
+
+  for (int i = 0; i < _height; i++) {
+    delete[]  _computed[i];
+  }
+  delete[] _computed;
+}
+
 void Satgraph::clearComputed() {
-  for (int i = 0; i < 180; i++) {
-    for (int x = 0; x < 360; x++) {
+  for (int i = 0; i < _height; i++) {
+    for (int x = 0; x < _width; x++) {
       _computed[i][x] = 0;
     }
   }
@@ -58,32 +115,21 @@ void Satgraph::loadDat(const string& path) {
 
 void Satgraph::packDat() {
   double lat       = -90;
-  double lon       = 0;
+  double lon       = -180;
   unsigned int idx = 0;
 
-  for (int i = 0; i < 180; i++) {
-    lon = 0;
-    int x = 0;
-
-    for (; x < 180; x++) {
-      v8::Local<v8::Object> object = v8::Object::New(_isolate);
-      object->Set(0, v8::Number::New(_isolate, lon++));
-      object->Set(1, v8::Number::New(_isolate, lat));
-      object->Set(2, v8::Number::New(_isolate, _map[i][x]));
-      object->Set(3, v8::Number::New(_isolate, _computed[i][x]));
-      _packedData->Set(idx++, object);
-    }
+  for (int i = 0; i < _height; i++) {
     lon = -180;
 
-    for (; x < 360; x++) {
+    for (int x = 0; x < _width; x++) {
       v8::Local<v8::Object> object = v8::Object::New(_isolate);
-      object->Set(0, v8::Number::New(_isolate, lon++));
+      object->Set(0, v8::Number::New(_isolate, lon += _step));
       object->Set(1, v8::Number::New(_isolate, lat));
       object->Set(2, v8::Number::New(_isolate, _map[i][x]));
       object->Set(3, v8::Number::New(_isolate, _computed[i][x]));
       _packedData->Set(idx++, object);
     }
-    lat++;
+    lat += _step;
   }
 }
 
@@ -99,15 +145,15 @@ void Satgraph::getNeighbour(int     i,
                             double *weights) {
   double distance = (double)offset;
 
-  if (i >= 180) i -= 180;
+  if (i >= _height) i -= _height;
 
-  if (i < 0) i += 180;
+  if (i < 0) i += _height;
 
-  if (x >= 360) x -= 360;
+  if (x >= _width) x -= _width;
 
-  if (x < 0) x += 360;
+  if (x < 0) x += _width;
 
-  if ((_map[i][x] != -1) && (_computed[i][x] == 0)) {
+  if ((_map[i][x] != 0) && (_computed[i][x] == 0)) {
     double weight = pow(distance, -1.0 * _smooth);
     *weights += weight;
     *sum     += _map[i][x] * weight;
@@ -182,9 +228,9 @@ double Satgraph::prep(int i, int x, int k) {
 
 void Satgraph::cleanDat() {
   if ((_diff != 0) && (_neighbours != 0)) {
-    for (int i = 8; i < 171; i++) {
-      for (int x = 0; x < 360; x++) {
-        if (_map[i][x] != -1) {
+    for (int i = _start; i < _stop; i++) {
+      for (int x = 0; x < _width; x++) {
+        if (_map[i][x] != 0) {
           _map[i][x] = clean(i, x, _neighbours);
         }
       }
@@ -194,9 +240,9 @@ void Satgraph::cleanDat() {
 
 void Satgraph::prepDat() {
   if ((_smooth != 0) && (_neighbours != 0)) {
-    for (int i = 8; i < 171; i++) {
-      for (int x = 0; x < 360; x++) {
-        if (_map[i][x] == -1) {
+    for (int i = _start; i < _stop; i++) {
+      for (int x = 0; x < _width; x++) {
+        if (_map[i][x] == 0) {
           _map[i][x]      = prep(i, x, _neighbours);
           _computed[i][x] = 1;
         }
