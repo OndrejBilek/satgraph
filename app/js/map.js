@@ -17,10 +17,18 @@ require('d3-svg-legend');
 
 //-----------------------------------------------------------------------------
 
-let g;
+
 let svg;
-let file;
-let params;
+let g1;
+let g2;
+let g3;
+let leg1;
+let leg2;
+let mag;
+
+let file1;
+let file2;
+
 let projection;
 
 let nform = true;
@@ -30,16 +38,36 @@ let scale = 330;
 let rotate = [0, 0];
 
 let color = d3.scale.linear()
-  .range(["blue", "green", "yellow", "red"])
-  .domain([1, 3, 5, 7]);
+  .range(["cyan", "green", "yellow", "red", "purple"])
+  .domain([1, 3, 5, 7, 9]);
 
-let legend = d3.legend.color()
+let log = d3.scale.log();
+
+let size = d3.scale.linear()
+  .domain([1, 1000])
+  .range([1, 5]);
+
+let legsize = d3.scale.linear()
+  .domain([0, 1])
+  .range([1, 5]);
+
+let legend1 = d3.legend.color()
   .shapeWidth(30)
   .orient('horizontal')
   .scale(color)
   .title("Dose rate [log nGy/h]")
-  .cells([2, 3, 4, 5, 6, 7, 8])
+  .cells([1, 2, 3, 4, 5, 6, 7, 8, 9])
   .labelFormat(d3.format("E>2"));
+
+let legend2 = d3.legend.size()
+  .scale(legsize)
+  .shape('circle')
+  .shapePadding(25)
+  .labelOffset(20)
+  .title("Ratio")
+  .cells([0.2, 0.4, 0.6, 0.8, 1])
+  .labelFormat(d3.format("%"))
+  .orient('horizontal');
 
 let tip = d3.tip()
   .attr("class", "d3-tip")
@@ -90,6 +118,9 @@ function clearVoronoi() {
   d3.selectAll(".voronoi").remove();
   d3.selectAll(".params").remove();
   d3.selectAll(".legend").remove();
+  d3.select("#g3").selectAll("*").remove();
+  d3.select("#leg1").selectAll("*").remove();
+  d3.select("#leg2").selectAll("*").remove();
   jQuery(".d3-tip").css("opacity", "0");
 }
 
@@ -104,21 +135,38 @@ function drawMap() {
     .rotate(rotate);
 
   let path = d3.geo.path().projection(projection);
+  mag.attr("fill-opacity", "1");
   d3.selectAll("path")
-    .attr("stroke", "#000")
+    .attr("stroke", "black")
     .attr("stroke-width", "1px")
     .attr("d", path);
 }
 
-function openFile() {
+function openFileMap() {
   let opts = {
     neighbours: jQuery("#neighbours").val(),
     smooth: jQuery("#smooth").val(),
     diff: jQuery("#diff").val(),
     binning: jQuery("#binning").val()
   };
-  if (file) {
-    return addon.process(file, opts);
+  if (file1) {
+    return addon.process(file1, opts);
+  } else {
+    return false;
+  }
+}
+
+function openFileParams() {
+  let opts = {
+    neighbours: 0,
+    smooth: 0,
+    diff: 0,
+    binning: jQuery("#binning").val()
+  };
+  if (file2) {
+    return addon.process(file2, opts);
+  } else {
+    return false;
   }
 }
 
@@ -139,7 +187,7 @@ function drawVoronoi(data) {
     .attr("stroke-width", "2px")
     .attr("d", path);
 
-  g.selectAll(".voronoi")
+  g1.selectAll(".voronoi")
     .data(data)
     .enter().append("svg:path")
     .attr("stroke-width", "1")
@@ -171,46 +219,65 @@ function drawVoronoi(data) {
     .on("mouseover", tip.show)
     .on("mouseout", tip.hide);
 
-  if (params) {
-    g.selectAll(".params")
-      .data(params)
-      .enter().append("svg:circle")
-      .attr("class", "params")
-      .attr("cx", function(d) {
-        return projection([d[7], d[8]])[0];
-      })
-      .attr("cy", function(d) {
-        return projection([d[7], d[8]])[1];
-      })
-      .attr("r", function(d) {
-        let val = d[16];
-        if (val == 0) {
-          return "0px";
-        } else if (val > 0 && val <= 100) {
-          return "2px";
-        } else if (val > 100 && val <= 500) {
-          return "4px";
-        } else if (val > 500 && val <= 800) {
-          return "6px";
-        } else if (val > 800) {
-          return "8px";
-        }
-      })
-      .attr("fill", "none")
-      .attr("stroke", "black")
-  }
+  mag.attr("fill-opacity", "0.0");
 
-  g.append("rect")
-    .attr("width", "232px")
+  g3.append("rect")
+    .attr("width", "297px")
     .attr("height", "80px")
     .attr("fill", "white")
     .attr("class", "legend")
     .attr("transform", "translate(15,5)");
 
+  leg1.attr("transform", "translate(20,20)")
+    .call(legend1);
+
+}
+
+function drawParams(data) {
+  g2.selectAll(".params")
+    .data(data)
+    .enter().append("svg:circle")
+    .attr("class", "params")
+    .attr("cx", function(d) {
+      return projection([d[0], d[1]])[0];
+    })
+    .attr("cy", function(d) {
+      return projection([d[0], d[1]])[1];
+    })
+    .attr("r", function(d) {
+      if (d[2] == -1) {
+        return "1px";
+      } else if (d[2] == -2) {
+        return "0px";
+      } else {
+        let val = size(log.invert(d[2]));
+        return val + "px";
+      }
+    })
+    .attr("fill", function(d) {
+      if (d[2] == -1) {
+        return "black";
+      } else {
+        return "none";
+      }
+    })
+    .attr("stroke", "black");
+
+  mag.attr("fill-opacity", "0.0");
+
+  g3.append("rect")
+    .attr("width", "170px")
+    .attr("height", "80px")
+    .attr("fill", "white")
+    .attr("class", "legend")
+    .attr("transform", "translate(15,90)");
+
+  leg2.attr("transform", "translate(20,110)")
+    .call(legend2);
 }
 
 function validate() {
-  if (nform && sform && dform && file) {
+  if (nform && sform && dform && (file1 || file2)) {
     jQuery("#generate").prop("disabled", false);
   } else {
     jQuery("#generate").prop("disabled", true);
@@ -261,12 +328,21 @@ function onLoad() {
   dialog.showOpenDialog(
     function(fileNames) {
       if (fileNames === undefined) return;
-      file = fileNames[0];
+      file1 = fileNames[0];
       validate();
     });
 }
 
 function onParams() {
+  dialog.showOpenDialog(
+    function(fileNames) {
+      if (fileNames === undefined) return;
+      file2 = fileNames[0];
+      validate();
+    });
+}
+
+function onParamsOld() {
   let dsv = d3.dsv(" ", "text/plain");
 
   dialog.showOpenDialog(
@@ -276,6 +352,7 @@ function onParams() {
         params = dsv.parseRows(text, function(d) {
           return d.map(Number);
         });
+        validate();
       });
     });
 }
@@ -285,9 +362,15 @@ function onResize() {
 }
 
 function onGenerate() {
-  let data = openFile();
-  let voronoi = generateVoronoi(data);
-  drawVoronoi(voronoi);
+  let map = openFileMap();
+  let params = openFileParams();
+
+  if (map) {
+    drawVoronoi(generateVoronoi(map));
+  }
+  if (params) {
+    drawParams(params);
+  }
 }
 
 function onDownloadPNG() {
@@ -334,7 +417,12 @@ function onInit() {
     .attr("width", "100%")
     .attr("fill", "white");
 
-  g = svg.append("g");
+  g1 = svg.append("g").attr("id", "g1");
+  mag = svg.append("g").attr("id", "mag");
+  g2 = svg.append("g").attr("id", "g2");
+  g3 = svg.append("g").attr("id", "g3");
+  leg1 = svg.append("g").attr("id", "leg1");
+  leg2 = svg.append("g").attr("id", "leg2");
 
   d3.json("../data/world.json", function(error, data) {
     if (error) throw error;
@@ -343,31 +431,29 @@ function onInit() {
       .precision(.1);
     let path = d3.geo.path().projection(projection);
     let graticule = d3.geo.graticule().step([20, 20]);
-    let map = svg.append("g");
-    map.append("path")
+
+    mag.append("path")
       .datum(topojson.feature(data, data.objects.land))
-      .attr("fill-opacity", "0.0")
-      .attr("stroke", "#000")
+      .attr("stroke", "black")
+      .attr("fill", "black")
       .attr("stroke-width", "1px")
       .attr("pointer-events", "none")
       .attr("d", path);
 
-    map.append("path")
+    mag.attr("fill-opacity", "1");
+
+    mag.append("path")
       .datum(graticule)
       .attr("fill", "none")
-      .attr("stroke", "#000")
+      .attr("stroke", "black")
       .attr("d", path);
 
-    map.append("path")
+    mag.append("path")
       .datum(graticule.outline)
       .attr("fill", "none")
-      .attr("stroke", "#000")
+      .attr("stroke", "black")
       .attr("stroke-width", "2px")
       .attr("d", path);
-
-    svg.append("g")
-      .attr("transform", "translate(20,20)")
-      .call(legend);
 
     drawMap();
   });
