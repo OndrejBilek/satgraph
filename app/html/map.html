@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
     <script src="../js/common.js"></script>
     <script src="../js/map.js"></script>
+    <script src="../js/isobands.js"></script>
 </head>
 
 <body onload="onInit()" onresize="onResize()">
@@ -43,6 +44,11 @@
                     </div>
                 </ul>
                 <form class="navbar-form navbar-right" role="form">
+                    <label for="contour">Contours: </label>
+                    <select class="form-control" id="contour">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
                     <label for="binning">Binning: </label>
                     <select class="form-control" id="binning">
                         <option value="1">1</option>

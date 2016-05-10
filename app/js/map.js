@@ -15,6 +15,7 @@ require("d3-tip")(d3);
 require("bootstrap");
 require('d3-svg-legend');
 
+
 //-----------------------------------------------------------------------------
 
 
@@ -118,6 +119,7 @@ function clearVoronoi() {
   d3.selectAll(".voronoi").remove();
   d3.selectAll(".params").remove();
   d3.selectAll(".legend").remove();
+  d3.selectAll(".isoband").remove();
   d3.select("#g3").selectAll("*").remove();
   d3.select("#leg1").selectAll("*").remove();
   d3.select("#leg2").selectAll("*").remove();
@@ -231,6 +233,52 @@ function drawVoronoi(data) {
   leg1.attr("transform", "translate(20,20)")
     .call(legend1);
 
+}
+
+function generateBands(data) {
+  let matrix = new Array(180);
+  let a = 0;
+  let b = 0;
+
+  matrix[0] = new Array(360);
+
+  for (let i = 0; i < data.length; i++) {
+    matrix[a][b++] = data[i][2];
+
+    if (b == 360 && a != 179) {
+      a++;
+      b = 0;
+      matrix[a] = new Array(360);
+    }
+  }
+
+  for (let i = 0; i < 10; i++) {
+    let band = MarchingSquaresJS.IsoBands(matrix, i, i + 1);
+    drawBand(band, i);
+  }
+}
+
+function drawBand(band, idx) {
+  g2.selectAll(".isoband")
+    .data(band)
+    .enter().append("svg:path")
+    .attr("stroke-width", "1px")
+    .attr("stroke", "black")
+    .attr("fill", "none")
+    .attr("class", "isoband" + idx)
+    .attr("d", function(d) {
+      for (var i = 0; i < d.length; i++) {
+        d[i][0] -= 180;
+        d[i][1] -= 90;
+      }
+      d = d3.geom.polygon(d);
+      d.clip([
+        [-180, -90],
+        [180, 90]
+      ]);
+      d = d.map(projection);
+      return "M" + d.join("L") + "Z";
+    })
 }
 
 function drawParams(data) {
@@ -367,6 +415,9 @@ function onGenerate() {
 
   if (map) {
     drawVoronoi(generateVoronoi(map));
+    if (jQuery("#contour").val() == "yes") {
+      generateBands(map)
+    }
   }
   if (params) {
     drawParams(params);

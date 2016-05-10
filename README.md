@@ -9,4 +9,10 @@ $ npm start
 ```
 
 ## Download
-Installers for Linux and Windows x64 are available [here](https://github.com/OndrejBilek/satgraph/releases)
+Installers for Linux and Windows x64 are available [here](https://github.com/OndrejBilek/satgraph/releases).
+
+## User documentation
+User documentation available [here](https://ondrejbilek.gitbooks.io/satgraph/content/).
+
+## Input data
+Sample input data is available on the CD attached to the thesis.

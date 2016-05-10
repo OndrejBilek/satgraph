@@ -18,7 +18,7 @@ Satgraph::Satgraph(const string& path,
     _height = 180;
     _step   = 1;
     _start  = 8;
-    _stop   = 171;
+    _stop   = 172;
     break;
 
   case 2:
