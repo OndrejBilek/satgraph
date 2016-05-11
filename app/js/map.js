@@ -225,7 +225,7 @@ function drawVoronoi(data) {
 
   mag.attr("fill-opacity", "0.0");
 
-  /*g3.append("rect")
+  g3.append("rect")
     .attr("width", "297px")
     .attr("height", "80px")
     .attr("fill", "white")
@@ -233,7 +233,7 @@ function drawVoronoi(data) {
     .attr("transform", "translate(15,5)");
 
   leg1.attr("transform", "translate(20,20)")
-    .call(legend1);*/
+    .call(legend1);
 
 }
 
