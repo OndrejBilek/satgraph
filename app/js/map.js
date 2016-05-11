@@ -135,6 +135,8 @@ function drawMap() {
   projection.translate([width / 2, height / 2])
     .scale(scale)
     .rotate(rotate);
+    //.scale(688.0274021551404)
+    //.rotate([40,24]);
 
   let path = d3.geo.path().projection(projection);
   mag.attr("fill-opacity", "1");
@@ -223,7 +225,7 @@ function drawVoronoi(data) {
 
   mag.attr("fill-opacity", "0.0");
 
-  g3.append("rect")
+  /*g3.append("rect")
     .attr("width", "297px")
     .attr("height", "80px")
     .attr("fill", "white")
@@ -231,7 +233,7 @@ function drawVoronoi(data) {
     .attr("transform", "translate(15,5)");
 
   leg1.attr("transform", "translate(20,20)")
-    .call(legend1);
+    .call(legend1);*/
 
 }
 

@@ -48,8 +48,8 @@ function draw() {
 
   let margin = {
     top: 20,
-    right: 80,
-    bottom: 80,
+    right: 120,
+    bottom: 100,
     left: 20
   }
 
@@ -129,7 +129,7 @@ function draw() {
     .attr("height", height);
 
   g.append("g")
-    .attr("font-size", "15")
+    .attr("font-size", "25")
     .attr("class", "y axis")
     .attr("transform", "translate(" + width + ",0)");
 
@@ -139,7 +139,7 @@ function draw() {
     .style("fill", "url(#gradient)");
 
   g.append("g")
-    .attr("font-size", "15")
+    .attr("font-size", "25")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")");
 
@@ -155,14 +155,14 @@ function draw() {
 
   g.append("text")
     .attr("text-anchor", "middle")
-    .attr("font-size", "20")
-    .attr("transform", "translate(" + (width + 50) + "," + (height / 2) + ")rotate(-90)")
+    .attr("font-size", "40")
+    .attr("transform", "translate(" + (width + 80) + "," + (height / 2) + ")rotate(-90)")
     .text("Count rate [log #/min/cm2]");
 
   g.append("text")
     .attr("text-anchor", "middle")
-    .attr("font-size", "20")
-    .attr("transform", "translate(" + (width / 2) + "," + (height + 50) + ")")
+    .attr("font-size", "40")
+    .attr("transform", "translate(" + (width / 2) + "," + (height + 70) + ")")
     .text("Time [days]");
 
   zoom.x(x);
